@@ -181,14 +181,15 @@ export function TripProvider({ children }) {
     }));
   }
 
-  function validateReservation(paymentMode = "simulation") {
+  function validateReservation(paymentDetails = {}) {
     const totals = calculateTotal(itinerary);
     const status = "confirmee";
     const reservation = {
       id: Date.now(),
       createdAt: new Date().toISOString(),
       status,
-      paymentMode,
+      paymentMode: "paiement simule",
+      paymentDetails,
       itinerary,
       totals
     };
@@ -199,7 +200,14 @@ export function TripProvider({ children }) {
         id: Date.now() + 1,
         message: `Votre reservation pour ${
           itinerary.destination?.name ?? "votre voyage"
-        } a ete confirmee`,
+        } a ete confirmee - dossier VV-${reservation.id}`,
+        reservationId: reservation.id,
+        details: {
+          destination: itinerary.destination?.name,
+          dates: `${itinerary.startDate} au ${itinerary.endDate}`,
+          total: totals.total,
+          paymentMethod: paymentDetails.cardLabel ?? "Carte simulee"
+        },
         read: false,
         createdAt: new Date().toISOString()
       },

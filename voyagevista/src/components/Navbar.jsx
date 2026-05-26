@@ -13,7 +13,11 @@ function Navbar() {
   return (
     <header className="navbar">
       <Link className="logo" to="/">
-        VoyageVista
+        <img
+          className="logo-mark"
+          src="/voyagevista-logo-premium-cropped.png"
+          alt="VoyageVista"
+        />
       </Link>
 
       <nav className="nav-links">
