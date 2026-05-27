@@ -25,7 +25,6 @@ try {
             transports.type,
             transports.depart,
             transports.arrivee,
-            transports.date_depart,
             transports.prix,
             transports.places_disponibles
         FROM transports

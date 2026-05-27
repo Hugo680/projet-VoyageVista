@@ -8,7 +8,6 @@ function Transports(props) {
   const [transports, setTransports] = useState([]);
   const [departureCity, setDepartureCity] = useState("");
   const [arrivalCity, setArrivalCity] = useState("");
-  const [date, setDate] = useState("");
   const [type, setType] = useState("");
   const [error, setError] = useState("");
 
@@ -31,17 +30,16 @@ function Transports(props) {
     const matchArrival =
       arrivalCity === "" ||
       transport.arrivalCity.toLowerCase().includes(arrivalCity.toLowerCase());
-    const matchDate = date === "" || transport.date === date;
     const matchType = type === "" || transport.type === type;
 
-    return matchDeparture && matchArrival && matchDate && matchType;
+    return matchDeparture && matchArrival && matchType;
   });
 
   return (
     <section>
       <div className="page-header">
         <h1>Transports</h1>
-        <p>Recherchez un trajet selon la ville, la date et le type.</p>
+        <p>Recherchez un trajet selon la ville et le type.</p>
       </div>
 
       <FilterPanel>
@@ -56,8 +54,6 @@ function Transports(props) {
           onChange={setArrivalCity}
           placeholder="Destination"
         />
-
-        <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
 
         <select value={type} onChange={(event) => setType(event.target.value)}>
           <option value="">Tous les types</option>

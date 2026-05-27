@@ -38,7 +38,6 @@ try {
             transports.type AS transport_type,
             transports.depart AS transport_depart,
             transports.arrivee AS transport_arrivee,
-            transports.date_depart AS transport_date_depart,
             transports.prix AS transport_prix,
             itineraires.hebergement_id,
             hebergements.nom AS hebergement_nom,

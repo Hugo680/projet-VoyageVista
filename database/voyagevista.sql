@@ -27,7 +27,6 @@ CREATE TABLE transports (
     type ENUM('avion', 'train', 'bus', 'voiture') NOT NULL,
     depart VARCHAR(100) NOT NULL,
     arrivee VARCHAR(100) NOT NULL,
-    date_depart DATE NOT NULL,
     prix DECIMAL(10,2) NOT NULL,
     places_disponibles INT DEFAULT 0,
     FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
@@ -115,13 +114,13 @@ VALUES
 (4, 'Marrakech', 'Maroc', 'Souks, jardins, excursions dans l’Atlas et ambiance orientale pour un séjour aventure.', 'marrakech.jpg', 540.00, 'aventure'),
 (5, 'Reykjavik', 'Islande', 'Sources chaudes, paysages volcaniques, nature sauvage et aurores boréales.', 'reykjavik.jpg', 1100.00, 'detente');
 
-INSERT INTO transports (destination_id, type, depart, arrivee, date_depart, prix, places_disponibles)
+INSERT INTO transports (destination_id, type, depart, arrivee, prix, places_disponibles)
 VALUES
-(1, 'avion', 'Paris', 'Bali', '2026-06-12', 720.00, 18),
-(2, 'avion', 'Paris', 'Tokyo', '2026-06-18', 840.00, 9),
-(3, 'train', 'Lyon', 'Chamonix', '2026-06-08', 68.00, 42),
-(4, 'avion', 'Marseille', 'Marrakech', '2026-06-21', 160.00, 24),
-(5, 'avion', 'Paris', 'Reykjavik', '2026-06-24', 390.00, 16);
+(1, 'avion', 'Paris', 'Bali', 720.00, 18),
+(2, 'avion', 'Paris', 'Tokyo', 840.00, 9),
+(3, 'train', 'Lyon', 'Chamonix', 68.00, 42),
+(4, 'avion', 'Marseille', 'Marrakech', 160.00, 24),
+(5, 'avion', 'Paris', 'Reykjavik', 390.00, 16);
 
 INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image)
 VALUES

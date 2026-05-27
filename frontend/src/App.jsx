@@ -12,6 +12,7 @@ import Cart from "./pages/Cart";
 import Reservations from "./pages/Reservations";
 import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
+import Admin from "./pages/Admin";
 import {
   getNotifications,
   getSession,
@@ -60,7 +61,9 @@ function calculateTotal(itinerary) {
 }
 
 function App() {
-  const [page, setPage] = useState("home");
+  const [page, setPage] = useState(
+    window.location.pathname === "/admin" ? "admin" : "home"
+  );
   const [detailDestinationId, setDetailDestinationId] = useState(null);
   const [itinerary, setItinerary] = useState(emptyItinerary);
   const [reservations, setReservations] = useState([]);
@@ -92,6 +95,11 @@ function App() {
 
   function goTo(newPage) {
     setPage(newPage);
+    if (newPage === "admin") {
+      window.history.pushState(null, "", "/admin");
+    } else if (window.location.pathname === "/admin") {
+      window.history.pushState(null, "", "/");
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -391,6 +399,10 @@ function App() {
           goTo={goTo}
         />
       );
+    }
+
+    if (page === "admin") {
+      return <Admin connected={connected} user={user} goTo={goTo} />;
     }
 
     return <Home goTo={goTo} />;

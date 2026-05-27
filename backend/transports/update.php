@@ -15,13 +15,12 @@ $destination_id = $data["destination_id"] ?? null;
 $type = trim($data["type"] ?? "");
 $depart = trim($data["depart"] ?? "");
 $arrivee = trim($data["arrivee"] ?? "");
-$date_depart = trim($data["date_depart"] ?? "");
 $prix = $data["prix"] ?? null;
 $places_disponibles = $data["places_disponibles"] ?? null;
 
 $types_valides = ["avion", "train", "bus", "voiture"];
 
-if (!$id || !$destination_id || $type === "" || $depart === "" || $arrivee === "" || $date_depart === "" || $prix === null || $places_disponibles === null) {
+if (!$id || !$destination_id || $type === "" || $depart === "" || $arrivee === "" || $prix === null || $places_disponibles === null) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
@@ -84,7 +83,7 @@ try {
 
     $stmt = $pdo->prepare("
         UPDATE transports
-        SET destination_id = ?, type = ?, depart = ?, arrivee = ?, date_depart = ?, prix = ?, places_disponibles = ?
+        SET destination_id = ?, type = ?, depart = ?, arrivee = ?, prix = ?, places_disponibles = ?
         WHERE id = ?
     ");
 
@@ -93,7 +92,6 @@ try {
         $type,
         $depart,
         $arrivee,
-        $date_depart,
         $prix,
         $places_disponibles,
         $id

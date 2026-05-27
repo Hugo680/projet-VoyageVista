@@ -17,13 +17,12 @@ try {
                 transports.type,
                 transports.depart,
                 transports.arrivee,
-                transports.date_depart,
                 transports.prix,
                 transports.places_disponibles
             FROM transports
             INNER JOIN destinations ON transports.destination_id = destinations.id
             WHERE transports.destination_id = ?
-            ORDER BY transports.date_depart ASC
+            ORDER BY transports.id DESC
         ");
         $stmt->execute([$destination_id]);
     } else {
@@ -35,12 +34,11 @@ try {
                 transports.type,
                 transports.depart,
                 transports.arrivee,
-                transports.date_depart,
                 transports.prix,
                 transports.places_disponibles
             FROM transports
             INNER JOIN destinations ON transports.destination_id = destinations.id
-            ORDER BY transports.date_depart ASC
+            ORDER BY transports.id DESC
         ");
     }
 

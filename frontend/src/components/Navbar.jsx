@@ -79,6 +79,14 @@ function Navbar(props) {
             Notifications {unreadCount}
           </button>
         )}
+        {props.user && props.user.role === "admin" && (
+          <button
+            className={getClass("admin")}
+            onClick={() => props.goTo("admin")}
+          >
+            Admin
+          </button>
+        )}
         <button className="nav-cart" onClick={() => props.goTo("panier")}>
           Panier {cartCount}
         </button>

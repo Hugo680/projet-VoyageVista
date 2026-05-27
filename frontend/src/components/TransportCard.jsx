@@ -11,17 +11,12 @@ function TransportCard(props) {
         <h3>
           {transport.departureCity} vers {transport.arrivalCity}
         </h3>
-        <p>
-          Depart le {transport.date} a {transport.departureTime} - arrivee a{" "}
-          {transport.arrivalTime}
-        </p>
         <p>{transport.company}</p>
         <p>{transport.placesAvailable} places disponibles</p>
       </div>
 
       <div className="list-card-right">
         <strong>{transport.price} EUR</strong>
-        <span>{transport.duration}</span>
         <button className="button" onClick={() => props.chooseTransport(transport)}>
           {isSelected ? "Deselectionner" : "Choisir"}
         </button>

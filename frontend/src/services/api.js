@@ -43,8 +43,18 @@ const imageMap = {
 };
 
 function getImageForName(name, fallbackType) {
-  const key = String(name || "").toLowerCase();
+  const rawName = String(name || "").trim();
+  const key = rawName.toLowerCase();
   const typeKey = String(fallbackType || "").toLowerCase();
+
+  if (key.startsWith("http://") || key.startsWith("https://") || key.startsWith("/")) {
+    return rawName;
+  }
+
+  if (key.startsWith("uploads/")) {
+    return `${API_BASE_URL}/${rawName}`;
+  }
+
   return imageMap[key] || imageMap[typeKey] || travelPlanningImage;
 }
 
@@ -85,6 +95,25 @@ function post(path, payload = {}) {
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/uploadImage.php`, {
+    method: "POST",
+    credentials: "include",
+    body: formData
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || "Erreur lors de l'envoi de l'image");
+  }
+
+  return data;
 }
 
 function toNumber(value) {
@@ -131,7 +160,6 @@ export function mapTransport(transport) {
     company: "VoyageVista Transport",
     departureCity: transport.depart || "",
     arrivalCity: transport.arrivee || "",
-    date: transport.date_depart || "",
     departureTime: "",
     arrivalTime: "",
     duration: "",
@@ -209,7 +237,6 @@ export function mapReservation(reservation) {
         company: "VoyageVista Transport",
         departureCity: reservation.transport_depart || "",
         arrivalCity: reservation.transport_arrivee || "",
-        date: reservation.transport_date_depart || "",
         price: toNumber(reservation.transport_prix)
       },
       accommodation: {
@@ -346,6 +373,79 @@ export async function markAllNotificationsAsRead() {
 
 export async function getAdminDashboard() {
   return request("/admin/dashboard.php");
+}
+
+export async function getAdminDestinations() {
+  const data = await request("/destinations/getAll.php");
+  return data.destinations;
+}
+
+export async function createDestination(payload) {
+  return post("/destinations/create.php", payload);
+}
+
+export async function updateDestination(payload) {
+  return post("/destinations/update.php", payload);
+}
+
+export async function deleteDestination(payload) {
+  return post("/destinations/delete.php", payload);
+}
+
+export async function getAdminTransports() {
+  const data = await request("/transports/getAll.php");
+  return data.transports;
+}
+
+export async function createTransport(payload) {
+  return post("/transports/create.php", payload);
+}
+
+export async function updateTransport(payload) {
+  return post("/transports/update.php", payload);
+}
+
+export async function deleteTransport(payload) {
+  return post("/transports/delete.php", payload);
+}
+
+export async function getAdminAccommodations() {
+  const data = await request("/hebergements/getAll.php");
+  return data.hebergements;
+}
+
+export async function createAccommodation(payload) {
+  return post("/hebergements/create.php", payload);
+}
+
+export async function updateAccommodation(payload) {
+  return post("/hebergements/update.php", payload);
+}
+
+export async function deleteAccommodation(payload) {
+  return post("/hebergements/delete.php", payload);
+}
+
+export async function getAdminActivities() {
+  const data = await request("/activites/getAll.php");
+  return data.activites;
+}
+
+export async function createActivity(payload) {
+  return post("/activites/create.php", payload);
+}
+
+export async function updateActivity(payload) {
+  return post("/activites/update.php", payload);
+}
+
+export async function deleteActivity(payload) {
+  return post("/activites/delete.php", payload);
+}
+
+export async function getAllReservations() {
+  const data = await request("/reservations/getAll.php");
+  return data.reservations;
 }
 
 export async function validateReservationFromItinerary(itinerary) {
