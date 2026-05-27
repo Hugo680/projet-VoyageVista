@@ -1,15 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ActivityCard from "../components/ActivityCard";
 import FilterPanel from "../components/FilterPanel";
-import { activities } from "../data/activities";
-import { destinations } from "../data/destinations";
+import { getActivities, getDestinations } from "../services/api";
 
 function Activities(props) {
+  const [activities, setActivities] = useState([]);
+  const [destinations, setDestinations] = useState([]);
   const [destinationId, setDestinationId] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [date, setDate] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [type, setType] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(function () {
+    async function loadActivities() {
+      try {
+        const [nextActivities, nextDestinations] = await Promise.all([
+          getActivities(),
+          getDestinations()
+        ]);
+        setActivities(nextActivities);
+        setDestinations(nextDestinations);
+      } catch (apiError) {
+        setError(apiError.message);
+      }
+    }
+
+    loadActivities();
+  }, []);
 
   const filteredActivities = activities.filter(function (activity) {
     const placesAvailable =
@@ -86,6 +105,8 @@ function Activities(props) {
           );
         })}
       </div>
+
+      {error && <p className="empty-message">{error}</p>}
     </section>
   );
 }

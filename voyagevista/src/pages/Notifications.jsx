@@ -4,6 +4,11 @@ function Notifications(props) {
       <div className="page-header">
         <h1>Notifications</h1>
         <p>Messages et confirmations lies a vos reservations.</p>
+        {props.notifications.length > 0 && (
+          <button className="button secondary" onClick={props.markAllNotificationsRead}>
+            Tout marquer comme lu
+          </button>
+        )}
       </div>
 
       <div className="list">

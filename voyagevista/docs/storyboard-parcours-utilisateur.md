@@ -4,7 +4,7 @@
 L'utilisateur arrive sur la page d'accueil VoyageVista. Il comprend que le site sert a composer un voyage complet avec destination, transport, hebergement, activites, panier et reservations.
 
 ## 2. Connexion
-L'utilisateur ouvre la page Connexion et valide une connexion simulee. Le parcours peut continuer sans vrai systeme d'authentification.
+L'utilisateur ouvre la page Connexion et s'identifie avec son email et son mot de passe. Le backend PHP cree une session utilisateur.
 
 ## 3. Choix d'une destination
 L'utilisateur consulte le catalogue des destinations, filtre selon son budget ou son type de voyage, puis selectionne une destination.
@@ -22,10 +22,10 @@ L'utilisateur consulte la page Activites. Il filtre par destination, prix, date,
 L'utilisateur ouvre Mon itineraire. Il voit la destination choisie, le transport, l'hebergement, les activites, les dates du sejour et le prix total.
 
 ## 8. Validation du panier
-L'utilisateur ouvre le panier. Il verifie le resume complet, clique sur Payer maintenant, puis valide la reservation.
+L'utilisateur ouvre le panier. Il verifie le resume complet, clique sur Payer maintenant pour simuler le paiement, puis valide la reservation. Le backend cree l'itineraire puis la reservation.
 
 ## 9. Notification
-Apres validation, une notification est creee, par exemple: Votre reservation pour Bali a ete confirmee.
+Apres validation, une notification est creee en base de donnees, par exemple: Votre reservation a ete confirmee.
 
 ## 10. Reservations
 L'utilisateur consulte Mes reservations pour retrouver l'historique de ses voyages valides avec statut, prix total et details du sejour.

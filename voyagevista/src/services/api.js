@@ -1,137 +1,366 @@
-import { destinations } from "../data/destinations";
-import { transports } from "../data/transports";
-import { accommodations } from "../data/accommodations";
-import { activities } from "../data/activities";
+import baliImage from "../assets/images/bali.jpg";
+import chamonixImage from "../assets/images/chamonix.jpg";
+import marrakechImage from "../assets/images/marrakech.jpg";
+import reykjavikImage from "../assets/images/reykjavik.jpg";
+import tokyoImage from "../assets/images/tokyo.jpg";
+import planeImage from "../assets/images/plane.jpg";
+import trainImage from "../assets/images/train.jpg";
+import busImage from "../assets/images/bus.jpg";
+import carImage from "../assets/images/car.jpg";
+import baliResortImage from "../assets/images/bali-ocean-resort.jpg";
+import chaletImage from "../assets/images/chalet-mont-blanc.jpg";
+import riadImage from "../assets/images/riad-soleil.jpg";
+import lodgeImage from "../assets/images/northern-lights-lodge.jpg";
+import tokyoHotelImage from "../assets/images/tokyo-central-hotel.jpg";
+import travelPlanningImage from "../assets/images/travel-planning.jpg";
 
-const USE_MOCK_DATA = true;
-const API_BASE_URL = "http://localhost/voyagevista/api";
+export const API_BASE_URL = "http://localhost/VoyageVista/backend";
+
+const imageMap = {
+  "bali.jpg": baliImage,
+  bali: baliImage,
+  "chamonix.jpg": chamonixImage,
+  chamonix: chamonixImage,
+  "marrakech.jpg": marrakechImage,
+  marrakech: marrakechImage,
+  "reykjavik.jpg": reykjavikImage,
+  reykjavik: reykjavikImage,
+  "tokyo.jpg": tokyoImage,
+  tokyo: tokyoImage,
+  "plane.jpg": planeImage,
+  avion: planeImage,
+  "train.jpg": trainImage,
+  train: trainImage,
+  "bus.jpg": busImage,
+  bus: busImage,
+  "car.jpg": carImage,
+  voiture: carImage,
+  "bali-ocean-resort.jpg": baliResortImage,
+  "chalet-mont-blanc.jpg": chaletImage,
+  "riad-soleil.jpg": riadImage,
+  "northern-lights-lodge.jpg": lodgeImage,
+  "tokyo-central-hotel.jpg": tokyoHotelImage
+};
+
+function getImageForName(name, fallbackType) {
+  const key = String(name || "").toLowerCase();
+  const typeKey = String(fallbackType || "").toLowerCase();
+  return imageMap[key] || imageMap[typeKey] || travelPlanningImage;
+}
+
+async function request(path, options = {}) {
+  const url = `${API_BASE_URL}${path}`;
+  const response = await fetch(url, {
+    credentials: "include",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const text = await response.text();
+
+  if (!text) {
+    throw new Error(`Reponse vide depuis ${url}`);
+  }
+
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    throw new Error(`Reponse non JSON depuis ${url}`);
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || `Erreur API ${response.status}`);
+  }
+
+  return data;
+}
+
+function post(path, payload = {}) {
+  return request(path, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function toNumber(value) {
+  return value === null || value === undefined ? 0 : Number(value);
+}
+
+function getNights(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+  return Number.isFinite(diff) ? Math.max(diff, 1) : 1;
+}
+
+export function mapUser(user) {
+  if (!user) return null;
+  return {
+    id: toNumber(user.id),
+    name: user.nom || user.name || "",
+    email: user.email || "",
+    role: user.role || "client"
+  };
+}
+
+export function mapDestination(destination) {
+  return {
+    id: toNumber(destination.id),
+    name: destination.nom,
+    country: destination.pays,
+    type: destination.categorie,
+    minPrice: toNumber(destination.prix_min),
+    popularity: 80,
+    image: getImageForName(destination.image || destination.nom, "destination"),
+    description: destination.description || "",
+    longDescription: destination.description || ""
+  };
+}
+
+export function mapTransport(transport) {
+  return {
+    id: toNumber(transport.id),
+    destinationId: toNumber(transport.destination_id),
+    destinationName: transport.destination_nom || "",
+    type: transport.type || "",
+    company: "VoyageVista Transport",
+    departureCity: transport.depart || "",
+    arrivalCity: transport.arrivee || "",
+    date: transport.date_depart || "",
+    departureTime: "",
+    arrivalTime: "",
+    duration: "",
+    price: toNumber(transport.prix),
+    placesAvailable: toNumber(transport.places_disponibles),
+    image: getImageForName(transport.image, transport.type)
+  };
+}
+
+export function mapAccommodation(accommodation) {
+  return {
+    id: toNumber(accommodation.id),
+    destinationId: toNumber(accommodation.destination_id),
+    destinationName: accommodation.destination_nom || "",
+    name: accommodation.nom || "",
+    type: accommodation.type || "",
+    pricePerNight: toNumber(accommodation.prix_nuit),
+    capacity: toNumber(accommodation.capacite),
+    available: Boolean(Number(accommodation.disponible)),
+    image: getImageForName(accommodation.image || accommodation.nom, accommodation.type),
+    description: accommodation.description || "Hebergement selectionne pour ce sejour."
+  };
+}
+
+export function mapActivity(activity) {
+  return {
+    id: toNumber(activity.id),
+    destinationId: toNumber(activity.destination_id),
+    destinationName: activity.destination_nom || "",
+    name: activity.nom || "",
+    type: activity.type || "experience",
+    price: toNumber(activity.prix),
+    date: activity.date_activite || "",
+    placesAvailable: toNumber(activity.places_disponibles),
+    image: getImageForName(activity.image || activity.nom, activity.type),
+    description: activity.description || ""
+  };
+}
+
+export function mapNotification(notification) {
+  return {
+    id: toNumber(notification.id),
+    message: notification.message || "",
+    type: notification.type || "info",
+    read: Boolean(Number(notification.lu)),
+    createdAt: notification.created_at || new Date().toISOString()
+  };
+}
+
+export function mapReservation(reservation) {
+  const activities = (reservation.activites || []).map(mapActivity);
+  const startDate = reservation.date_debut || "";
+  const endDate = reservation.date_fin || "";
+  const nights = getNights(startDate, endDate);
+
+  return {
+    id: toNumber(reservation.id),
+    createdAt: reservation.date_reservation || new Date().toISOString(),
+    status: reservation.statut || "",
+    paymentMode: "paiement simule",
+    paymentDetails: null,
+    itinerary: {
+      destination: {
+        id: toNumber(reservation.destination_id),
+        name: reservation.destination_nom || "Destination",
+        country: reservation.destination_pays || ""
+      },
+      transport: {
+        id: toNumber(reservation.transport_id),
+        type: reservation.transport_type || "",
+        company: "VoyageVista Transport",
+        departureCity: reservation.transport_depart || "",
+        arrivalCity: reservation.transport_arrivee || "",
+        date: reservation.transport_date_depart || "",
+        price: toNumber(reservation.transport_prix)
+      },
+      accommodation: {
+        id: toNumber(reservation.hebergement_id),
+        name: reservation.hebergement_nom || "Hebergement",
+        type: reservation.hebergement_type || "",
+        pricePerNight: toNumber(reservation.hebergement_prix_nuit)
+      },
+      activities: activities,
+      startDate: startDate,
+      endDate: endDate
+    },
+    totals: {
+      nights: nights,
+      transportTotal: toNumber(reservation.transport_prix),
+      accommodationTotal: toNumber(reservation.hebergement_prix_nuit) * nights,
+      activitiesTotal: activities.reduce(function (total, activity) {
+        return total + activity.price;
+      }, 0),
+      total: toNumber(reservation.prix_total)
+    }
+  };
+}
 
 export async function getDestinations() {
-  if (USE_MOCK_DATA) return destinations;
-
-  const response = await fetch(`${API_BASE_URL}/destinations.php`);
-  return response.json();
+  const data = await request("/destinations/getAll.php");
+  return data.destinations.map(mapDestination);
 }
 
 export async function getDestinationById(id) {
-  if (USE_MOCK_DATA) {
-    return destinations.find((destination) => destination.id === Number(id));
-  }
-
-  const response = await fetch(`${API_BASE_URL}/destination.php?id=${id}`);
-  return response.json();
+  const data = await request(`/destinations/getOne.php?id=${encodeURIComponent(id)}`);
+  return mapDestination(data.destination);
 }
 
 export async function getTransports() {
-  if (USE_MOCK_DATA) return transports;
-
-  const response = await fetch(`${API_BASE_URL}/transports.php`);
-  return response.json();
+  const data = await request("/transports/getAll.php");
+  return data.transports.map(mapTransport);
 }
 
 export async function getTransportsByDestination(destinationId) {
-  if (USE_MOCK_DATA) {
-    return transports.filter(
-      (transport) => transport.destinationId === Number(destinationId)
-    );
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/transports-by-destination.php?destination_id=${destinationId}`
+  const data = await request(
+    `/transports/getAll.php?destination_id=${encodeURIComponent(destinationId)}`
   );
-  return response.json();
+  return data.transports.map(mapTransport);
 }
 
 export async function getAccommodations() {
-  if (USE_MOCK_DATA) return accommodations;
-
-  const response = await fetch(`${API_BASE_URL}/accommodations.php`);
-  return response.json();
+  const data = await request("/hebergements/getAll.php");
+  return data.hebergements.map(mapAccommodation);
 }
 
 export async function getAccommodationsByDestination(destinationId) {
-  if (USE_MOCK_DATA) {
-    return accommodations.filter(
-      (accommodation) => accommodation.destinationId === Number(destinationId)
-    );
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/accommodations-by-destination.php?destination_id=${destinationId}`
+  const data = await request(
+    `/hebergements/getAll.php?destination_id=${encodeURIComponent(destinationId)}`
   );
-  return response.json();
-}
-
-export async function getActivitiesByDestination(destinationId) {
-  if (USE_MOCK_DATA) {
-    return activities.filter(
-      (activity) => activity.destinationId === Number(destinationId)
-    );
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/activities-by-destination.php?destination_id=${destinationId}`
-  );
-  return response.json();
+  return data.hebergements.map(mapAccommodation);
 }
 
 export async function getActivities() {
-  if (USE_MOCK_DATA) return activities;
-
-  const response = await fetch(`${API_BASE_URL}/activities.php`);
-  return response.json();
+  const data = await request("/activites/getAll.php");
+  return data.activites.map(mapActivity);
 }
 
-export async function addToItinerary(payload) {
-  if (USE_MOCK_DATA) return { success: true, item: payload };
-
-  const response = await fetch(`${API_BASE_URL}/itinerary/add.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  return response.json();
+export async function getActivitiesByDestination(destinationId) {
+  const data = await request(
+    `/activites/getAll.php?destination_id=${encodeURIComponent(destinationId)}`
+  );
+  return data.activites.map(mapActivity);
 }
 
-export async function getUserItinerary() {
-  if (USE_MOCK_DATA) return null;
-
-  const response = await fetch(`${API_BASE_URL}/itinerary.php`);
-  return response.json();
+export async function loginUser(payload) {
+  const data = await post("/auth/login.php", payload);
+  return { ...data, user: mapUser(data.user) };
 }
 
-export async function validateReservation(payload) {
-  if (USE_MOCK_DATA) return { success: true, reservation: payload };
+export async function registerUser(payload) {
+  return post("/auth/register.php", payload);
+}
 
-  const response = await fetch(`${API_BASE_URL}/reservations/validate.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  return response.json();
+export async function logoutUser() {
+  return post("/auth/logout.php");
+}
+
+export async function getSession() {
+  const data = await request("/auth/session.php");
+  return { ...data, user: mapUser(data.user) };
+}
+
+export async function createItinerary(payload) {
+  return post("/itineraires/create.php", payload);
+}
+
+export async function getUserItineraries() {
+  return request("/itineraires/getMine.php");
+}
+
+export async function updateItinerary(payload) {
+  return post("/itineraires/update.php", payload);
+}
+
+export async function addActivityToItinerary(payload) {
+  return post("/itineraires/addActivite.php", payload);
+}
+
+export async function removeActivityFromItinerary(payload) {
+  return post("/itineraires/removeActivite.php", payload);
+}
+
+export async function createReservation(payload) {
+  return post("/reservations/create.php", payload);
 }
 
 export async function getUserReservations() {
-  if (USE_MOCK_DATA) return [];
+  const data = await request("/reservations/getMine.php");
+  return data.reservations.map(mapReservation);
+}
 
-  const response = await fetch(`${API_BASE_URL}/reservations.php`);
-  return response.json();
+export async function cancelReservation(payload) {
+  return post("/reservations/cancel.php", payload);
 }
 
 export async function getNotifications() {
-  if (USE_MOCK_DATA) return [];
-
-  const response = await fetch(`${API_BASE_URL}/notifications.php`);
-  return response.json();
+  const data = await request("/notifications/getMine.php");
+  return data.notifications.map(mapNotification);
 }
 
 export async function markNotificationAsRead(notificationId) {
-  if (USE_MOCK_DATA) return { success: true, id: notificationId };
+  return post("/notifications/markAsRead.php", { notification_id: notificationId });
+}
 
-  const response = await fetch(`${API_BASE_URL}/notifications/read.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: notificationId })
+export async function markAllNotificationsAsRead() {
+  return post("/notifications/markAllAsRead.php");
+}
+
+export async function getAdminDashboard() {
+  return request("/admin/dashboard.php");
+}
+
+export async function validateReservationFromItinerary(itinerary) {
+  const itineraryData = await createItinerary({
+    destination_id: itinerary.destination.id,
+    transport_id: itinerary.transport.id,
+    hebergement_id: itinerary.accommodation.id,
+    date_debut: itinerary.startDate,
+    date_fin: itinerary.endDate
   });
-  return response.json();
+
+  const itineraireId = itineraryData.itineraire_id;
+
+  for (const activity of itinerary.activities) {
+    await addActivityToItinerary({
+      itineraire_id: itineraireId,
+      activite_id: activity.id
+    });
+  }
+
+  return createReservation({ itineraire_id: itineraireId });
 }

@@ -1,14 +1,28 @@
-import { useState } from "react";
-import { transports } from "../data/transports";
+import { useEffect, useState } from "react";
 import TransportCard from "../components/TransportCard";
 import SearchBar from "../components/SearchBar";
 import FilterPanel from "../components/FilterPanel";
+import { getTransports } from "../services/api";
 
 function Transports(props) {
+  const [transports, setTransports] = useState([]);
   const [departureCity, setDepartureCity] = useState("");
   const [arrivalCity, setArrivalCity] = useState("");
   const [date, setDate] = useState("");
   const [type, setType] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(function () {
+    async function loadTransports() {
+      try {
+        setTransports(await getTransports());
+      } catch (apiError) {
+        setError(apiError.message);
+      }
+    }
+
+    loadTransports();
+  }, []);
 
   const filteredTransports = transports.filter(function (transport) {
     const matchDeparture =
@@ -70,6 +84,7 @@ function Transports(props) {
       {filteredTransports.length === 0 && (
         <p className="empty-message">Aucun transport ne correspond a votre recherche.</p>
       )}
+      {error && <p className="empty-message">{error}</p>}
     </section>
   );
 }

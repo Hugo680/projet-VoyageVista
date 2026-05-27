@@ -1,38 +1,72 @@
-import { destinations } from "../data/destinations";
-import { transports } from "../data/transports";
-import { accommodations } from "../data/accommodations";
-import { activities } from "../data/activities";
+import { useEffect, useState } from "react";
 import TransportCard from "../components/TransportCard";
 import AccommodationCard from "../components/AccommodationCard";
 import ActivityCard from "../components/ActivityCard";
+import {
+  getActivitiesByDestination,
+  getAccommodationsByDestination,
+  getDestinationById,
+  getTransportsByDestination
+} from "../services/api";
 
 function DestinationDetails(props) {
-  const destination = destinations.find(function (item) {
-    return item.id === Number(props.destinationId);
-  });
+  const [destination, setDestination] = useState(null);
+  const [linkedTransports, setLinkedTransports] = useState([]);
+  const [linkedAccommodations, setLinkedAccommodations] = useState([]);
+  const [linkedActivities, setLinkedActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(
+    function () {
+      async function loadDetails() {
+        setLoading(true);
+        setError("");
+
+        try {
+          const [nextDestination, nextTransports, nextAccommodations, nextActivities] =
+            await Promise.all([
+              getDestinationById(props.destinationId),
+              getTransportsByDestination(props.destinationId),
+              getAccommodationsByDestination(props.destinationId),
+              getActivitiesByDestination(props.destinationId)
+            ]);
+          setDestination(nextDestination);
+          setLinkedTransports(nextTransports);
+          setLinkedAccommodations(nextAccommodations);
+          setLinkedActivities(nextActivities);
+        } catch (apiError) {
+          setError(apiError.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      if (props.destinationId) {
+        loadDetails();
+      }
+    },
+    [props.destinationId]
+  );
+
+  if (loading) {
+    return (
+      <section>
+        <p>Chargement de la destination...</p>
+      </section>
+    );
+  }
 
   if (!destination) {
     return (
       <section>
-        <p>Destination introuvable.</p>
+        <p>{error || "Destination introuvable."}</p>
         <button className="button" onClick={() => props.goTo("destinations")}>
           Retour au catalogue
         </button>
       </section>
     );
   }
-
-  const linkedTransports = transports.filter(function (transport) {
-    return transport.destinationId === destination.id;
-  });
-
-  const linkedAccommodations = accommodations.filter(function (accommodation) {
-    return accommodation.destinationId === destination.id;
-  });
-
-  const linkedActivities = activities.filter(function (activity) {
-    return activity.destinationId === destination.id;
-  });
 
   return (
     <section>

@@ -7,9 +7,13 @@
 ## Taches aidees par l'IA
 - Identification du probleme initial: mauvais point d'entree Vite, composants vides et dependances React manquantes.
 - Creation des composants React manquants.
-- Ajout des donnees mockees pour destinations, transports, hebergements et activites.
+- Ajout initial de donnees de test pour destinations, transports, hebergements et activites, puis remplacement par les donnees PHP/MySQL.
 - Creation du parcours utilisateur complet: itineraire, panier, reservations et notifications.
 - Preparation des routes API.
+- Branchement du frontend React sur le backend PHP/MySQL existant.
+- Ajout du mapping entre les champs backend en francais/snake_case et les champs frontend en anglais/camelCase.
+- Remplacement de la connexion simulee par `auth/login.php`, `auth/session.php` et `auth/logout.php`.
+- Branchement des catalogues, reservations et notifications sur les routes PHP.
 - Amelioration visuelle avec une palette plus premium.
 
 ## Reponses utiles
@@ -28,4 +32,4 @@
 - Ajouter un contexte global pour l'itineraire.
 - Ajouter la page Activites et ses filtres.
 - Ajouter les pages Itineraire, Panier, Reservations et Notifications.
-- Ajouter la logique de reservation simulee et de notification.
+- Garder le paiement simule tout en validant la reservation via le backend.

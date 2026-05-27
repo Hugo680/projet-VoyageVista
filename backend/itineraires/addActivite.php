@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/../config/cors.php";
+
 session_start();
 
 header("Content-Type: application/json; charset=UTF-8");

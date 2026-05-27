@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -12,6 +12,15 @@ import Cart from "./pages/Cart";
 import Reservations from "./pages/Reservations";
 import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
+import {
+  getNotifications,
+  getSession,
+  getUserReservations,
+  logoutUser,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+  validateReservationFromItinerary
+} from "./services/api";
 
 const emptyItinerary = {
   destination: null,
@@ -58,8 +67,28 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [activityAvailability, setActivityAvailability] = useState({});
   const [connected, setConnected] = useState(false);
+  const [user, setUser] = useState(null);
 
   const totals = calculateTotal(itinerary);
+
+  useEffect(function () {
+    async function loadSession() {
+      try {
+        const session = await getSession();
+        setConnected(Boolean(session.isLoggedIn));
+        setUser(session.user);
+
+        if (session.isLoggedIn) {
+          refreshPrivateData();
+        }
+      } catch (error) {
+        setConnected(false);
+        setUser(null);
+      }
+    }
+
+    loadSession();
+  }, []);
 
   function goTo(newPage) {
     setPage(newPage);
@@ -164,39 +193,13 @@ function App() {
     });
   }
 
-  function validateReservation(paymentDetails) {
-    const reservation = {
-      id: Date.now(),
-      createdAt: new Date().toISOString(),
-      status: "confirmee",
-      paymentMode: "paiement simule",
-      paymentDetails: paymentDetails,
-      itinerary: itinerary,
-      totals: totals
-    };
+  async function validateReservation(paymentDetails) {
+    if (!connected) {
+      goTo("connexion");
+      throw new Error("Vous devez etre connecte pour valider la reservation.");
+    }
 
-    setReservations([reservation, ...reservations]);
-
-    setNotifications([
-      {
-        id: Date.now() + 1,
-        message:
-          "Votre reservation pour " +
-          itinerary.destination.name +
-          " a ete confirmee - dossier VV-" +
-          reservation.id,
-        reservationId: reservation.id,
-        details: {
-          destination: itinerary.destination.name,
-          dates: itinerary.startDate + " au " + itinerary.endDate,
-          total: totals.total,
-          paymentMethod: paymentDetails.cardLabel
-        },
-        read: false,
-        createdAt: new Date().toISOString()
-      },
-      ...notifications
-    ]);
+    const backendReservation = await validateReservationFromItinerary(itinerary);
 
     const nextAvailability = { ...activityAvailability };
     itinerary.activities.forEach(function (activity) {
@@ -208,24 +211,81 @@ function App() {
     });
     setActivityAvailability(nextAvailability);
 
+    const [nextReservations, nextNotifications] = await Promise.all([
+      getUserReservations(),
+      getNotifications()
+    ]);
+    setReservations(nextReservations);
+    setNotifications(nextNotifications);
+
+    const reservation =
+      nextReservations.find(function (item) {
+        return item.id === Number(backendReservation.reservation_id);
+      }) || {
+        id: backendReservation.reservation_id,
+        createdAt: new Date().toISOString(),
+        status: "confirmee",
+        paymentMode: "paiement simule",
+        paymentDetails: paymentDetails,
+        itinerary: itinerary,
+        totals: { ...totals, total: Number(backendReservation.prix_total) }
+      };
+
     setItinerary(emptyItinerary);
     return reservation;
   }
 
-  function markNotificationRead(notificationId) {
-    const updatedNotifications = notifications.map(function (notification) {
-      if (notification.id === notificationId) {
-        return { ...notification, read: true };
-      }
-      return notification;
-    });
+  async function markNotificationRead(notificationId) {
+    await markNotificationAsRead(notificationId);
+    const nextNotifications = await getNotifications();
+    setNotifications(nextNotifications);
+  }
 
-    setNotifications(updatedNotifications);
+  async function markAllNotificationsRead() {
+    await markAllNotificationsAsRead();
+    const nextNotifications = await getNotifications();
+    setNotifications(nextNotifications);
+  }
+
+  async function refreshPrivateData() {
+    try {
+      const [nextReservations, nextNotifications] = await Promise.all([
+        getUserReservations(),
+        getNotifications()
+      ]);
+      setReservations(nextReservations);
+      setNotifications(nextNotifications);
+    } catch (error) {
+      setReservations([]);
+      setNotifications([]);
+    }
+  }
+
+  async function handleLogout() {
+    await logoutUser();
+    setConnected(false);
+    setUser(null);
+    setReservations([]);
+    setNotifications([]);
+    goTo("home");
+  }
+
+  async function handleLoginSuccess(nextUser) {
+    setConnected(true);
+    setUser(nextUser);
+    await refreshPrivateData();
   }
 
   function renderPage() {
     if (page === "connexion") {
-      return <Login connected={connected} setConnected={setConnected} goTo={goTo} />;
+      return (
+        <Login
+          connected={connected}
+          user={user}
+          onLoginSuccess={handleLoginSuccess}
+          goTo={goTo}
+        />
+      );
     }
 
     if (page === "destinations") {
@@ -320,6 +380,7 @@ function App() {
         <Notifications
           notifications={notifications}
           markNotificationRead={markNotificationRead}
+          markAllNotificationsRead={markAllNotificationsRead}
           goTo={goTo}
         />
       );
@@ -335,6 +396,9 @@ function App() {
         goTo={goTo}
         itinerary={itinerary}
         notifications={notifications}
+        connected={connected}
+        user={user}
+        logout={handleLogout}
       />
 
       <main className="main-container">{renderPage()}</main>

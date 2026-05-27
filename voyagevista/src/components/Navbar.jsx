@@ -31,7 +31,7 @@ function Navbar(props) {
           className={getClass("connexion")}
           onClick={() => props.goTo("connexion")}
         >
-          Connexion
+          {props.connected ? props.user?.name || "Compte" : "Connexion"}
         </button>
         <button
           className={getClass("destinations")}
@@ -63,21 +63,30 @@ function Navbar(props) {
         >
           Itineraire
         </button>
-        <button
-          className={getClass("reservations")}
-          onClick={() => props.goTo("reservations")}
-        >
-          Reservations
-        </button>
-        <button
-          className={getClass("notifications")}
-          onClick={() => props.goTo("notifications")}
-        >
-          Notifications {unreadCount}
-        </button>
+        {props.connected && (
+          <button
+            className={getClass("reservations")}
+            onClick={() => props.goTo("reservations")}
+          >
+            Reservations
+          </button>
+        )}
+        {props.connected && (
+          <button
+            className={getClass("notifications")}
+            onClick={() => props.goTo("notifications")}
+          >
+            Notifications {unreadCount}
+          </button>
+        )}
         <button className="nav-cart" onClick={() => props.goTo("panier")}>
           Panier {cartCount}
         </button>
+        {props.connected && (
+          <button onClick={props.logout}>
+            Deconnexion
+          </button>
+        )}
       </nav>
     </header>
   );

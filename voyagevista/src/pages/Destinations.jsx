@@ -1,14 +1,28 @@
-import { useState } from "react";
-import { destinations } from "../data/destinations";
+import { useEffect, useState } from "react";
 import DestinationCard from "../components/DestinationCard";
 import SearchBar from "../components/SearchBar";
 import FilterPanel from "../components/FilterPanel";
+import { getDestinations } from "../services/api";
 
 function Destinations(props) {
+  const [destinations, setDestinations] = useState([]);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(function () {
+    async function loadDestinations() {
+      try {
+        setDestinations(await getDestinations());
+      } catch (apiError) {
+        setError(apiError.message);
+      }
+    }
+
+    loadDestinations();
+  }, []);
 
   let filteredDestinations = destinations.filter(function (destination) {
     const value = search.toLowerCase();
@@ -92,6 +106,8 @@ function Destinations(props) {
           );
         })}
       </div>
+
+      {error && <p className="empty-message">{error}</p>}
 
       {filteredDestinations.length === 0 && (
         <p className="empty-message">Aucune destination ne correspond a votre recherche.</p>

@@ -20,6 +20,8 @@ function Cart(props) {
   const [payment, setPayment] = useState(initialPayment);
   const [paid, setPaid] = useState(false);
   const [confirmed, setConfirmed] = useState(null);
+  const [message, setMessage] = useState("");
+  const [validating, setValidating] = useState(false);
 
   const canValidate =
     props.itinerary.destination &&
@@ -36,7 +38,7 @@ function Cart(props) {
     setPaid(true);
   }
 
-  function handleValidate() {
+  async function handleValidate() {
     const paymentDetails = {
       holderName: payment.holderName,
       cardLabel: maskCard(payment.cardNumber),
@@ -46,8 +48,17 @@ function Cart(props) {
       authorizationCode: "AUTH-" + Date.now().toString().slice(-6)
     };
 
-    const reservation = props.validateReservation(paymentDetails);
-    setConfirmed(reservation);
+    setValidating(true);
+    setMessage("");
+
+    try {
+      const reservation = await props.validateReservation(paymentDetails);
+      setConfirmed({ ...reservation, paymentDetails: paymentDetails });
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setValidating(false);
+    }
   }
 
   if (confirmed) {
@@ -162,12 +173,13 @@ function Cart(props) {
           {paid && <p className="available">Paiement simule accepte.</p>}
           <button
             className="button"
-            disabled={!paid || !canValidate}
+            disabled={!paid || !canValidate || validating}
             type="button"
             onClick={handleValidate}
           >
-            Valider la reservation
+            {validating ? "Validation..." : "Valider la reservation"}
           </button>
+          {message && <p className="unavailable">{message}</p>}
         </div>
       </form>
     </section>

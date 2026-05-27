@@ -1,12 +1,26 @@
-import { useState } from "react";
-import { accommodations } from "../data/accommodations";
+import { useEffect, useState } from "react";
 import AccommodationCard from "../components/AccommodationCard";
 import FilterPanel from "../components/FilterPanel";
+import { getAccommodations } from "../services/api";
 
 function Accommodations(props) {
+  const [accommodations, setAccommodations] = useState([]);
   const [maxPrice, setMaxPrice] = useState("");
   const [type, setType] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(function () {
+    async function loadAccommodations() {
+      try {
+        setAccommodations(await getAccommodations());
+      } catch (apiError) {
+        setError(apiError.message);
+      }
+    }
+
+    loadAccommodations();
+  }, []);
 
   const filteredAccommodations = accommodations.filter(function (accommodation) {
     const matchPrice =
@@ -66,6 +80,7 @@ function Accommodations(props) {
       {filteredAccommodations.length === 0 && (
         <p className="empty-message">Aucun hebergement ne correspond a votre recherche.</p>
       )}
+      {error && <p className="empty-message">{error}</p>}
     </section>
   );
 }
