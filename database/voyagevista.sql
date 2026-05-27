@@ -104,7 +104,7 @@ CREATE TABLE notifications (
 
 INSERT INTO users (nom, email, password, role)
 VALUES
-('Hugo', 'hugo@test.com', '$2y$10$u6dG0Hf5Pp0y9rpTNdI0yOe1mHz4l7eJ/.WRAvHk4oA6zjBGRv2S2', 'admin');
+('Hugo', 'hugo@test.com', '$2y$10$U7zYROjrMYMrQ/jwNlWdI.JkiXBKjAKS.SbTuMwRTa678cF2pPsLy', 'admin');
 
 INSERT INTO destinations (id, nom, pays, description, image, prix_min, categorie)
 VALUES

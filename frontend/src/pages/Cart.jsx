@@ -3,12 +3,12 @@ import ItinerarySummary from "../components/ItinerarySummary";
 import { saveStoredPaymentDetails } from "../services/paymentStorage";
 
 const initialPayment = {
-  holderName: "",
-  cardNumber: "",
+  holderName: "HUGO MARTIN",
+  cardNumber: "4242 4242 4242 1234",
   expiry: "12/29",
-  cvv: "",
-  iban: "",
-  billingEmail: ""
+  cvv: "123",
+  iban: "FR76 3000 6000 0112 3456 7890 189",
+  billingEmail: "client@voyagevista.fr"
 };
 
 function maskCard(cardNumber) {
