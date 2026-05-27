@@ -90,8 +90,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Erreur lors de l'ajout de l'hébergement",
-        "details" => $e->getMessage()
+        "message" => "Erreur lors de l'ajout de l'hébergement"
     ]);
 }
 ?>

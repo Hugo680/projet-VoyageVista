@@ -4,15 +4,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . "/../config/db.php";
-
-if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] !== "admin") {
-    http_response_code(403);
-    echo json_encode([
-        "success" => false,
-        "message" => "Accès refusé : administrateur uniquement"
-    ]);
-    exit;
-}
+require_once __DIR__ . "/../middleware/auth_admin.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
