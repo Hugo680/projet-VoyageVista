@@ -818,6 +818,15 @@ body {
   font-weight: 700;
 }
 
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-tabs .button {
+  flex: 1;
+}
+
 .quick-actions,
 .payment-panel {
   display: flex;

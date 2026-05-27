@@ -34,7 +34,7 @@ if (strlen($password) < 6) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "Le mot de passe doit contenir au moins 6 caractères"
+        "message" => "Le mot de passe doit contenir au moins 6 caracteres"
     ]);
     exit;
 }
@@ -47,7 +47,7 @@ try {
         http_response_code(409);
         echo json_encode([
             "success" => false,
-            "message" => "Cet email est déjà utilisé"
+            "message" => "Cet email est deja utilise"
         ]);
         exit;
     }
@@ -63,14 +63,14 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "Compte créé avec succès"
+        "message" => "Inscription reussie"
     ]);
 
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Erreur lors de la création du compte"
+        "message" => "Erreur lors de la creation du compte"
     ]);
 }
 ?>
