@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import ItinerarySummary from "../components/ItinerarySummary";
-import { useTrip } from "../context/TripContext";
 
 const initialPayment = {
   holderName: "ILIAN MARTIN",
@@ -15,20 +13,22 @@ const initialPayment = {
 function maskCard(cardNumber) {
   const digits = cardNumber.replace(/\D/g, "");
   const lastFour = digits.slice(-4) || "0000";
-  return `Carte bleue se terminant par ${lastFour}`;
+  return "Carte bleue se terminant par " + lastFour;
 }
 
-function Cart() {
-  const { itinerary, totals, validateReservation } = useTrip();
+function Cart(props) {
   const [payment, setPayment] = useState(initialPayment);
   const [paid, setPaid] = useState(false);
   const [confirmed, setConfirmed] = useState(null);
+
   const canValidate =
-    itinerary.destination && itinerary.transport && itinerary.accommodation;
+    props.itinerary.destination &&
+    props.itinerary.transport &&
+    props.itinerary.accommodation;
 
   function updatePayment(field, value) {
     setPaid(false);
-    setPayment((current) => ({ ...current, [field]: value }));
+    setPayment({ ...payment, [field]: value });
   }
 
   function handlePayment(event) {
@@ -40,12 +40,13 @@ function Cart() {
     const paymentDetails = {
       holderName: payment.holderName,
       cardLabel: maskCard(payment.cardNumber),
-      ibanLabel: payment.iban ? `${payment.iban.slice(0, 8)} **** **** ****` : "",
+      ibanLabel: payment.iban ? payment.iban.slice(0, 8) + " **** **** ****" : "",
       billingEmail: payment.billingEmail,
       cvvChecked: payment.cvv.length >= 3,
-      authorizationCode: `AUTH-${Date.now().toString().slice(-6)}`
+      authorizationCode: "AUTH-" + Date.now().toString().slice(-6)
     };
-    const reservation = validateReservation(paymentDetails);
+
+    const reservation = props.validateReservation(paymentDetails);
     setConfirmed(reservation);
   }
 
@@ -55,13 +56,12 @@ function Cart() {
         <span className="tag">Dossier VV-{confirmed.id}</span>
         <h1>Reservation confirmee</h1>
         <p>
-          Votre voyage pour {confirmed.itinerary.destination?.name} est
-          maintenant enregistre avec le paiement simule{" "}
-          {confirmed.paymentDetails.cardLabel}.
+          Votre voyage pour {confirmed.itinerary.destination.name} est maintenant
+          enregistre avec le paiement simule {confirmed.paymentDetails.cardLabel}.
         </p>
-        <Link className="button" to="/reservations">
+        <button className="button" onClick={() => props.goTo("reservations")}>
           Voir mes reservations
-        </Link>
+        </button>
       </section>
     );
   }
@@ -73,7 +73,17 @@ function Cart() {
         <p>Verifiez, modifiez puis validez votre reservation.</p>
       </div>
 
-      <ItinerarySummary showActions />
+      <ItinerarySummary
+        itinerary={props.itinerary}
+        totals={props.totals}
+        setStayDates={props.setStayDates}
+        removeDestination={props.removeDestination}
+        removeTransport={props.removeTransport}
+        removeAccommodation={props.removeAccommodation}
+        removeActivity={props.removeActivity}
+        goTo={props.goTo}
+        showActions={true}
+      />
 
       <form className="payment-panel" onSubmit={handlePayment}>
         <div className="payment-heading">
@@ -81,7 +91,7 @@ function Cart() {
             <span className="tag">Paiement simule</span>
             <h2>Informations de paiement</h2>
           </div>
-          <strong>{totals.total} EUR</strong>
+          <strong>{props.totals.total} EUR</strong>
         </div>
 
         <div className="payment-grid">
@@ -90,7 +100,6 @@ function Cart() {
             <input
               value={payment.holderName}
               onChange={(event) => updatePayment("holderName", event.target.value)}
-              placeholder="Nom sur la carte"
               required
             />
           </label>
@@ -100,8 +109,6 @@ function Cart() {
             <input
               value={payment.cardNumber}
               onChange={(event) => updatePayment("cardNumber", event.target.value)}
-              placeholder="4970 0000 0000 1234"
-              inputMode="numeric"
               required
             />
           </label>
@@ -111,7 +118,6 @@ function Cart() {
             <input
               value={payment.expiry}
               onChange={(event) => updatePayment("expiry", event.target.value)}
-              placeholder="MM/AA"
               required
             />
           </label>
@@ -121,8 +127,6 @@ function Cart() {
             <input
               value={payment.cvv}
               onChange={(event) => updatePayment("cvv", event.target.value)}
-              placeholder="123"
-              inputMode="numeric"
               maxLength="4"
               required
             />
@@ -133,7 +137,6 @@ function Cart() {
             <input
               value={payment.iban}
               onChange={(event) => updatePayment("iban", event.target.value)}
-              placeholder="FR76 3000 6000 0112 3456 7890 189"
             />
           </label>
 
@@ -142,9 +145,7 @@ function Cart() {
             <input
               type="email"
               value={payment.billingEmail}
-              onChange={(event) =>
-                updatePayment("billingEmail", event.target.value)
-              }
+              onChange={(event) => updatePayment("billingEmail", event.target.value)}
               required
             />
           </label>

@@ -1,9 +1,4 @@
-import { Link } from "react-router-dom";
-import { useTrip } from "../context/TripContext";
-
-function Notifications() {
-  const { notifications, markNotificationRead } = useTrip();
-
+function Notifications(props) {
   return (
     <section>
       <div className="page-header">
@@ -12,44 +7,49 @@ function Notifications() {
       </div>
 
       <div className="list">
-        {notifications.map((notification) => (
-          <article
-            className={`list-card notification-card ${
-              notification.read ? "is-read" : ""
-            }`}
-            key={notification.id}
-          >
-            <div className="list-card-main">
-              <span className="tag">{notification.read ? "lue" : "nouvelle"}</span>
-              <h3>{notification.message}</h3>
-              {notification.details && (
-                <div className="notification-details">
-                  <span>Destination: {notification.details.destination}</span>
-                  <span>Dates: {notification.details.dates}</span>
-                  <span>Total: {notification.details.total} EUR</span>
-                  <span>Paiement: {notification.details.paymentMethod}</span>
-                </div>
-              )}
-              <p>{new Date(notification.createdAt).toLocaleString("fr-FR")}</p>
-            </div>
-            <div className="notification-actions">
-              <Link className="button secondary" to="/reservations">
-                Voir le dossier
-              </Link>
-              {!notification.read && (
+        {props.notifications.map(function (notification) {
+          return (
+            <article
+              className={
+                "list-card notification-card " + (notification.read ? "is-read" : "")
+              }
+              key={notification.id}
+            >
+              <div className="list-card-main">
+                <span className="tag">{notification.read ? "lue" : "nouvelle"}</span>
+                <h3>{notification.message}</h3>
+                {notification.details && (
+                  <div className="notification-details">
+                    <span>Destination: {notification.details.destination}</span>
+                    <span>Dates: {notification.details.dates}</span>
+                    <span>Total: {notification.details.total} EUR</span>
+                    <span>Paiement: {notification.details.paymentMethod}</span>
+                  </div>
+                )}
+                <p>{new Date(notification.createdAt).toLocaleString("fr-FR")}</p>
+              </div>
+              <div className="notification-actions">
                 <button
-                  className="button"
-                  onClick={() => markNotificationRead(notification.id)}
+                  className="button secondary"
+                  onClick={() => props.goTo("reservations")}
                 >
-                  Marquer comme lue
+                  Voir le dossier
                 </button>
-              )}
-            </div>
-          </article>
-        ))}
+                {!notification.read && (
+                  <button
+                    className="button"
+                    onClick={() => props.markNotificationRead(notification.id)}
+                  >
+                    Marquer comme lue
+                  </button>
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
 
-      {notifications.length === 0 && (
+      {props.notifications.length === 0 && (
         <p className="empty-message">Aucune notification pour le moment.</p>
       )}
     </section>

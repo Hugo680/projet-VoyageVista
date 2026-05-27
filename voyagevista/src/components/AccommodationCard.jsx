@@ -1,8 +1,8 @@
-import { useTrip } from "../context/TripContext";
-
-function AccommodationCard({ accommodation }) {
-  const { itinerary, chooseAccommodation } = useTrip();
-  const isSelected = itinerary.accommodation?.id === accommodation.id;
+function AccommodationCard(props) {
+  const accommodation = props.accommodation;
+  const isSelected =
+    props.itinerary.accommodation &&
+    props.itinerary.accommodation.id === accommodation.id;
 
   return (
     <article className="card">
@@ -21,7 +21,7 @@ function AccommodationCard({ accommodation }) {
           <button
             className="button"
             disabled={!accommodation.available}
-            onClick={() => chooseAccommodation(accommodation)}
+            onClick={() => props.chooseAccommodation(accommodation)}
           >
             {isSelected ? "Deselectionner" : "Choisir"}
           </button>

@@ -1,38 +1,83 @@
-import { NavLink, Link } from "react-router-dom";
-import { useTrip } from "../context/TripContext";
+function Navbar(props) {
+  const unreadCount = props.notifications.filter(function (notification) {
+    return notification.read === false;
+  }).length;
 
-function Navbar() {
-  const { itinerary, notifications } = useTrip();
-  const unreadCount = notifications.filter((notification) => !notification.read).length;
   const cartCount =
-    Number(Boolean(itinerary.destination)) +
-    Number(Boolean(itinerary.transport)) +
-    Number(Boolean(itinerary.accommodation)) +
-    itinerary.activities.length;
+    Number(Boolean(props.itinerary.destination)) +
+    Number(Boolean(props.itinerary.transport)) +
+    Number(Boolean(props.itinerary.accommodation)) +
+    props.itinerary.activities.length;
+
+  function getClass(pageName) {
+    return props.page === pageName ? "active" : "";
+  }
 
   return (
     <header className="navbar">
-      <Link className="logo" to="/">
+      <button className="logo logo-button" onClick={() => props.goTo("home")}>
         <img
           className="logo-mark"
           src="/voyagevista-logo-premium-cropped.png"
           alt="VoyageVista"
         />
-      </Link>
+      </button>
 
       <nav className="nav-links">
-        <NavLink to="/">Accueil</NavLink>
-        <NavLink to="/connexion">Connexion</NavLink>
-        <NavLink to="/destinations">Destinations</NavLink>
-        <NavLink to="/transports">Transports</NavLink>
-        <NavLink to="/hebergements">Hebergements</NavLink>
-        <NavLink to="/activites">Activites</NavLink>
-        <NavLink to="/itineraire">Itineraire</NavLink>
-        <NavLink to="/reservations">Reservations</NavLink>
-        <NavLink to="/notifications">Notifications {unreadCount}</NavLink>
-        <NavLink className="nav-cart" to="/panier">
+        <button className={getClass("home")} onClick={() => props.goTo("home")}>
+          Accueil
+        </button>
+        <button
+          className={getClass("connexion")}
+          onClick={() => props.goTo("connexion")}
+        >
+          Connexion
+        </button>
+        <button
+          className={getClass("destinations")}
+          onClick={() => props.goTo("destinations")}
+        >
+          Destinations
+        </button>
+        <button
+          className={getClass("transports")}
+          onClick={() => props.goTo("transports")}
+        >
+          Transports
+        </button>
+        <button
+          className={getClass("hebergements")}
+          onClick={() => props.goTo("hebergements")}
+        >
+          Hebergements
+        </button>
+        <button
+          className={getClass("activites")}
+          onClick={() => props.goTo("activites")}
+        >
+          Activites
+        </button>
+        <button
+          className={getClass("itineraire")}
+          onClick={() => props.goTo("itineraire")}
+        >
+          Itineraire
+        </button>
+        <button
+          className={getClass("reservations")}
+          onClick={() => props.goTo("reservations")}
+        >
+          Reservations
+        </button>
+        <button
+          className={getClass("notifications")}
+          onClick={() => props.goTo("notifications")}
+        >
+          Notifications {unreadCount}
+        </button>
+        <button className="nav-cart" onClick={() => props.goTo("panier")}>
           Panier {cartCount}
-        </NavLink>
+        </button>
       </nav>
     </header>
   );

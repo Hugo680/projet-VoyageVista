@@ -1,16 +1,6 @@
-import { Link } from "react-router-dom";
-import { useTrip } from "../context/TripContext";
-
-function ItinerarySummary({ showActions = true }) {
-  const {
-    itinerary,
-    totals,
-    removeActivity,
-    removeDestination,
-    removeTransport,
-    removeAccommodation,
-    setStayDates
-  } = useTrip();
+function ItinerarySummary(props) {
+  const itinerary = props.itinerary;
+  const totals = props.totals;
 
   return (
     <div className="summary-layout">
@@ -23,7 +13,7 @@ function ItinerarySummary({ showActions = true }) {
               type="date"
               value={itinerary.startDate}
               onChange={(event) =>
-                setStayDates(event.target.value, itinerary.endDate)
+                props.setStayDates(event.target.value, itinerary.endDate)
               }
             />
           </label>
@@ -33,7 +23,7 @@ function ItinerarySummary({ showActions = true }) {
               type="date"
               value={itinerary.endDate}
               onChange={(event) =>
-                setStayDates(itinerary.startDate, event.target.value)
+                props.setStayDates(itinerary.startDate, event.target.value)
               }
             />
           </label>
@@ -45,9 +35,9 @@ function ItinerarySummary({ showActions = true }) {
         <h2>Choix du voyage</h2>
         <div className="summary-row">
           <span>Destination</span>
-          <strong>{itinerary.destination?.name ?? "Non choisie"}</strong>
-          {showActions && itinerary.destination && (
-            <button className="text-button" onClick={removeDestination}>
+          <strong>{itinerary.destination ? itinerary.destination.name : "Non choisie"}</strong>
+          {props.showActions && itinerary.destination && (
+            <button className="text-button" onClick={props.removeDestination}>
               Retirer
             </button>
           )}
@@ -56,20 +46,24 @@ function ItinerarySummary({ showActions = true }) {
           <span>Transport</span>
           <strong>
             {itinerary.transport
-              ? `${itinerary.transport.departureCity} - ${itinerary.transport.arrivalCity}`
+              ? itinerary.transport.departureCity +
+                " - " +
+                itinerary.transport.arrivalCity
               : "Non choisi"}
           </strong>
-          {showActions && itinerary.transport && (
-            <button className="text-button" onClick={removeTransport}>
+          {props.showActions && itinerary.transport && (
+            <button className="text-button" onClick={props.removeTransport}>
               Retirer
             </button>
           )}
         </div>
         <div className="summary-row">
           <span>Hebergement</span>
-          <strong>{itinerary.accommodation?.name ?? "Non choisi"}</strong>
-          {showActions && itinerary.accommodation && (
-            <button className="text-button" onClick={removeAccommodation}>
+          <strong>
+            {itinerary.accommodation ? itinerary.accommodation.name : "Non choisi"}
+          </strong>
+          {props.showActions && itinerary.accommodation && (
+            <button className="text-button" onClick={props.removeAccommodation}>
               Retirer
             </button>
           )}
@@ -79,17 +73,22 @@ function ItinerarySummary({ showActions = true }) {
       <section className="summary-panel">
         <h2>Activites</h2>
         {itinerary.activities.length === 0 && <p>Aucune activite ajoutee.</p>}
-        {itinerary.activities.map((activity) => (
-          <div className="summary-row" key={activity.id}>
-            <span>{activity.name}</span>
-            <strong>{activity.price} EUR</strong>
-            {showActions && (
-              <button className="text-button" onClick={() => removeActivity(activity.id)}>
-                Retirer
-              </button>
-            )}
-          </div>
-        ))}
+        {itinerary.activities.map(function (activity) {
+          return (
+            <div className="summary-row" key={activity.id}>
+              <span>{activity.name}</span>
+              <strong>{activity.price} EUR</strong>
+              {props.showActions && (
+                <button
+                  className="text-button"
+                  onClick={() => props.removeActivity(activity.id)}
+                >
+                  Retirer
+                </button>
+              )}
+            </div>
+          );
+        })}
       </section>
 
       <section className="summary-panel total-panel">
@@ -111,10 +110,10 @@ function ItinerarySummary({ showActions = true }) {
           <strong>{totals.total} EUR</strong>
         </div>
 
-        {showActions && (
-          <Link className="button" to="/panier">
+        {props.showActions && (
+          <button className="button" onClick={() => props.goTo("panier")}>
             Aller au panier
-          </Link>
+          </button>
         )}
       </section>
     </div>

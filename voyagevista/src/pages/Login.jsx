@@ -1,15 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-
-function Login() {
-  const [connected, setConnected] = useState(
-    localStorage.getItem("voyagevista-user") === "connected"
-  );
-
+function Login(props) {
   function handleLogin(event) {
     event.preventDefault();
-    localStorage.setItem("voyagevista-user", "connected");
-    setConnected(true);
+    props.setConnected(true);
   }
 
   return (
@@ -31,14 +23,18 @@ function Login() {
         <button className="button" type="submit">
           Se connecter
         </button>
-        {connected && (
+        {props.connected && (
           <p className="available">
             Connexion reussie. Vous pouvez continuer votre reservation.
           </p>
         )}
-        <Link className="button secondary" to="/destinations">
+        <button
+          className="button secondary"
+          type="button"
+          onClick={() => props.goTo("destinations")}
+        >
           Continuer vers les destinations
-        </Link>
+        </button>
       </form>
     </section>
   );

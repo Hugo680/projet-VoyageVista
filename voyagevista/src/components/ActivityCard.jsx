@@ -1,9 +1,12 @@
-import { useTrip } from "../context/TripContext";
-
-function ActivityCard({ activity }) {
-  const { itinerary, availability, addActivity, removeActivity } = useTrip();
-  const isSelected = itinerary.activities.some((item) => item.id === activity.id);
-  const placesAvailable = availability[activity.id] ?? activity.placesAvailable;
+function ActivityCard(props) {
+  const activity = props.activity;
+  const isSelected = props.itinerary.activities.some(function (item) {
+    return item.id === activity.id;
+  });
+  const placesAvailable =
+    props.activityAvailability[activity.id] !== undefined
+      ? props.activityAvailability[activity.id]
+      : activity.placesAvailable;
 
   return (
     <article className="card">
@@ -12,20 +15,25 @@ function ActivityCard({ activity }) {
         <span className="tag">{activity.type}</span>
         <h3>{activity.name}</h3>
         <p>{activity.description}</p>
-        <p className="country">{activity.destinationName} - {activity.date}</p>
+        <p className="country">
+          {activity.destinationName} - {activity.date}
+        </p>
         <p>{placesAvailable} places disponibles</p>
 
         <div className="card-footer">
           <strong>{activity.price} EUR</strong>
           {isSelected ? (
-            <button className="button danger" onClick={() => removeActivity(activity.id)}>
+            <button
+              className="button danger"
+              onClick={() => props.removeActivity(activity.id)}
+            >
               Retirer
             </button>
           ) : (
             <button
               className="button"
               disabled={placesAvailable === 0}
-              onClick={() => addActivity({ ...activity, placesAvailable })}
+              onClick={() => props.addActivity(activity)}
             >
               Ajouter a mon itineraire
             </button>

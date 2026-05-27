@@ -71,7 +71,19 @@ select {
   color: #374151;
 }
 
+.nav-links button {
+  border: none;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .nav-links a.active {
+  color: #0f766e;
+}
+
+.nav-links button.active {
   color: #0f766e;
 }
 
@@ -239,6 +251,9 @@ select {
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   transition: 0.2s ease;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 }
 
 .home-card:hover {
@@ -582,8 +597,17 @@ body {
   white-space: nowrap;
 }
 
+.nav-links button {
+  color: #46534b;
+  padding: 8px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .nav-links a.active,
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links button.active,
+.nav-links button:hover {
   background: var(--forest-light);
   color: var(--forest);
 }
@@ -591,6 +615,13 @@ body {
 .nav-cart {
   background: var(--forest) !important;
   color: white !important;
+}
+
+.logo-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
 }
 
 .main-container {

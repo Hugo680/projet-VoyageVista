@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import ItinerarySummary from "../components/ItinerarySummary";
 
-function Itinerary() {
+function Itinerary(props) {
   return (
     <section>
       <div className="page-header">
@@ -9,13 +8,31 @@ function Itinerary() {
         <p>Retrouvez votre destination, transport, hebergement et activites.</p>
       </div>
 
-      <ItinerarySummary />
+      <ItinerarySummary
+        itinerary={props.itinerary}
+        totals={props.totals}
+        setStayDates={props.setStayDates}
+        removeDestination={props.removeDestination}
+        removeTransport={props.removeTransport}
+        removeAccommodation={props.removeAccommodation}
+        removeActivity={props.removeActivity}
+        goTo={props.goTo}
+        showActions={true}
+      />
 
       <div className="quick-actions">
-        <Link className="button secondary" to="/destinations">Choisir une destination</Link>
-        <Link className="button secondary" to="/transports">Choisir un transport</Link>
-        <Link className="button secondary" to="/hebergements">Choisir un hebergement</Link>
-        <Link className="button secondary" to="/activites">Ajouter des activites</Link>
+        <button className="button secondary" onClick={() => props.goTo("destinations")}>
+          Choisir une destination
+        </button>
+        <button className="button secondary" onClick={() => props.goTo("transports")}>
+          Choisir un transport
+        </button>
+        <button className="button secondary" onClick={() => props.goTo("hebergements")}>
+          Choisir un hebergement
+        </button>
+        <button className="button secondary" onClick={() => props.goTo("activites")}>
+          Ajouter des activites
+        </button>
       </div>
     </section>
   );

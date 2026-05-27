@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import heroImage from "../assets/images/hero-voyage.jpg";
 
-function Home() {
+function Home(props) {
   return (
     <section>
       <div className="hero">
@@ -14,12 +13,12 @@ function Home() {
           </p>
 
           <div className="hero-actions">
-            <Link className="button secondary" to="/destinations">
+            <button className="button secondary" onClick={() => props.goTo("destinations")}>
               Choisir une destination
-            </Link>
-            <Link className="button" to="/itineraire">
+            </button>
+            <button className="button" onClick={() => props.goTo("itineraire")}>
               Voir mon itineraire
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -37,22 +36,22 @@ function Home() {
       </div>
 
       <div className="home-grid">
-        <Link className="home-card" to="/destinations">
+        <button className="home-card" onClick={() => props.goTo("destinations")}>
           <h3>Destinations</h3>
           <p>Selectionnez le lieu principal du sejour.</p>
-        </Link>
-        <Link className="home-card" to="/transports">
+        </button>
+        <button className="home-card" onClick={() => props.goTo("transports")}>
           <h3>Transports</h3>
           <p>Choisissez le trajet qui rejoint votre destination.</p>
-        </Link>
-        <Link className="home-card" to="/hebergements">
+        </button>
+        <button className="home-card" onClick={() => props.goTo("hebergements")}>
           <h3>Hebergements</h3>
           <p>Ajoutez un logement et calculez les nuits.</p>
-        </Link>
-        <Link className="home-card" to="/activites">
+        </button>
+        <button className="home-card" onClick={() => props.goTo("activites")}>
           <h3>Activites</h3>
           <p>Completez le sejour avec des experiences.</p>
-        </Link>
+        </button>
       </div>
     </section>
   );

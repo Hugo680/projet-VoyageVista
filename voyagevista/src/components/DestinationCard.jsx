@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
-import { useTrip } from "../context/TripContext";
-
-function DestinationCard({ destination }) {
-  const { itinerary, chooseDestination } = useTrip();
-  const isSelected = itinerary.destination?.id === destination.id;
+function DestinationCard(props) {
+  const destination = props.destination;
+  const isSelected =
+    props.itinerary.destination &&
+    props.itinerary.destination.id === destination.id;
 
   return (
     <article className="card">
@@ -18,13 +17,16 @@ function DestinationCard({ destination }) {
           <strong>A partir de {destination.minPrice} EUR</strong>
           <button
             className="button secondary"
-            onClick={() => chooseDestination(destination)}
+            onClick={() => props.chooseDestination(destination)}
           >
             {isSelected ? "Deselectionner" : "Choisir"}
           </button>
-          <Link className="button" to={`/destinations/${destination.id}`}>
+          <button
+            className="button"
+            onClick={() => props.showDestinationDetails(destination.id)}
+          >
             Voir details
-          </Link>
+          </button>
         </div>
       </div>
     </article>

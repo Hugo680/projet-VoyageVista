@@ -1,60 +1,40 @@
-import { useEffect, useMemo, useState } from "react";
-import { getTransports } from "../services/api";
+import { useState } from "react";
+import { transports } from "../data/transports";
 import TransportCard from "../components/TransportCard";
 import SearchBar from "../components/SearchBar";
 import FilterPanel from "../components/FilterPanel";
 
-function Transports() {
-  const [transports, setTransports] = useState([]);
+function Transports(props) {
   const [departureCity, setDepartureCity] = useState("");
   const [arrivalCity, setArrivalCity] = useState("");
   const [date, setDate] = useState("");
   const [type, setType] = useState("");
 
-  useEffect(() => {
-    async function loadTransports() {
-      const data = await getTransports();
-      setTransports(data);
-    }
+  const filteredTransports = transports.filter(function (transport) {
+    const matchDeparture =
+      departureCity === "" ||
+      transport.departureCity.toLowerCase().includes(departureCity.toLowerCase());
+    const matchArrival =
+      arrivalCity === "" ||
+      transport.arrivalCity.toLowerCase().includes(arrivalCity.toLowerCase());
+    const matchDate = date === "" || transport.date === date;
+    const matchType = type === "" || transport.type === type;
 
-    loadTransports();
-  }, []);
-
-  const filteredTransports = useMemo(() => {
-    return transports.filter((transport) => {
-      const matchDeparture =
-        departureCity === "" ||
-        transport.departureCity
-          .toLowerCase()
-          .includes(departureCity.toLowerCase());
-
-      const matchArrival =
-        arrivalCity === "" ||
-        transport.arrivalCity.toLowerCase().includes(arrivalCity.toLowerCase());
-
-      const matchDate = date === "" || transport.date === date;
-
-      const matchType = type === "" || transport.type === type;
-
-      return matchDeparture && matchArrival && matchDate && matchType;
-    });
-  }, [transports, departureCity, arrivalCity, date, type]);
+    return matchDeparture && matchArrival && matchDate && matchType;
+  });
 
   return (
     <section>
       <div className="page-header">
         <h1>Transports</h1>
-        <p>
-          Recherchez un trajet selon votre ville de départ, votre destination,
-          la date et le type de transport.
-        </p>
+        <p>Recherchez un trajet selon la ville, la date et le type.</p>
       </div>
 
       <FilterPanel>
         <SearchBar
           value={departureCity}
           onChange={setDepartureCity}
-          placeholder="Ville de départ"
+          placeholder="Ville de depart"
         />
 
         <SearchBar
@@ -63,11 +43,7 @@ function Transports() {
           placeholder="Destination"
         />
 
-        <input
-          type="date"
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-        />
+        <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
 
         <select value={type} onChange={(event) => setType(event.target.value)}>
           <option value="">Tous les types</option>
@@ -79,15 +55,20 @@ function Transports() {
       </FilterPanel>
 
       <div className="list">
-        {filteredTransports.map((transport) => (
-          <TransportCard key={transport.id} transport={transport} />
-        ))}
+        {filteredTransports.map(function (transport) {
+          return (
+            <TransportCard
+              key={transport.id}
+              transport={transport}
+              itinerary={props.itinerary}
+              chooseTransport={props.chooseTransport}
+            />
+          );
+        })}
       </div>
 
       {filteredTransports.length === 0 && (
-        <p className="empty-message">
-          Aucun transport ne correspond à votre recherche.
-        </p>
+        <p className="empty-message">Aucun transport ne correspond a votre recherche.</p>
       )}
     </section>
   );

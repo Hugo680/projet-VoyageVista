@@ -1,8 +1,7 @@
-import { useTrip } from "../context/TripContext";
-
-function TransportCard({ transport }) {
-  const { itinerary, chooseTransport } = useTrip();
-  const isSelected = itinerary.transport?.id === transport.id;
+function TransportCard(props) {
+  const transport = props.transport;
+  const isSelected =
+    props.itinerary.transport && props.itinerary.transport.id === transport.id;
 
   return (
     <article className="list-card transport-card">
@@ -23,7 +22,7 @@ function TransportCard({ transport }) {
       <div className="list-card-right">
         <strong>{transport.price} EUR</strong>
         <span>{transport.duration}</span>
-        <button className="button" onClick={() => chooseTransport(transport)}>
+        <button className="button" onClick={() => props.chooseTransport(transport)}>
           {isSelected ? "Deselectionner" : "Choisir"}
         </button>
       </div>
