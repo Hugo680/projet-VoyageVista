@@ -1,0 +1,34 @@
+function AccommodationCard(props) {
+  const accommodation = props.accommodation;
+  const isSelected =
+    props.itinerary.accommodation &&
+    props.itinerary.accommodation.id === accommodation.id;
+
+  return (
+    <article className="card">
+      <img src={accommodation.image} alt={accommodation.name} />
+      <div className="card-content">
+        <span className="tag">{accommodation.type}</span>
+        <h3>{accommodation.name}</h3>
+        <p>{accommodation.description}</p>
+        <p>Capacite: {accommodation.capacity} personne(s)</p>
+        <p className={accommodation.available ? "available" : "unavailable"}>
+          {accommodation.available ? "Disponible" : "Indisponible"}
+        </p>
+
+        <div className="card-footer">
+          <strong>{accommodation.pricePerNight} EUR / nuit</strong>
+          <button
+            className="button"
+            disabled={!accommodation.available}
+            onClick={() => props.chooseAccommodation(accommodation)}
+          >
+            {isSelected ? "Deselectionner" : "Choisir"}
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default AccommodationCard;
