@@ -124,20 +124,20 @@ VALUES
 
 INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image)
 VALUES
-(1, 'Bali Beach Hotel', 'hôtel', 115.00, 2, TRUE, 'bali-hotel.jpg'),
-(1, 'Ubud Garden Villa', 'villa', 165.00, 4, TRUE, 'ubud-villa.jpg'),
+(1, 'Bali Beach Hotel', 'Hotel', 115.00, 2, TRUE, 'bali-hotel.jpg'),
+(1, 'Ubud Garden Villa', 'Villa', 165.00, 4, TRUE, 'ubud-villa.jpg'),
 
-(2, 'Tokyo Central Hotel', 'hôtel', 180.00, 3, TRUE, 'tokyo-hotel.jpg'),
-(2, 'Shibuya Smart Stay', 'appartement', 130.00, 2, TRUE, 'shibuya-stay.jpg'),
+(2, 'Tokyo Central Hotel', 'Hotel', 180.00, 3, TRUE, 'tokyo-hotel.jpg'),
+(2, 'Shibuya Smart Stay', 'Appartement', 130.00, 2, TRUE, 'shibuya-stay.jpg'),
 
-(3, 'Chalet Mont-Blanc', 'chalet', 220.00, 6, TRUE, 'chalet-mont-blanc.jpg'),
-(3, 'Alpine Lodge', 'lodge', 145.00, 3, TRUE, 'alpine-lodge.jpg'),
+(3, 'Chalet Mont-Blanc', 'Chalet', 220.00, 6, TRUE, 'chalet-mont-blanc.jpg'),
+(3, 'Alpine Lodge', 'Chalet', 145.00, 3, TRUE, 'alpine-lodge.jpg'),
 
-(4, 'Riad Soleil', 'riad', 95.00, 2, TRUE, 'riad-soleil.jpg'),
-(4, 'Atlas Desert Camp', 'camp', 125.00, 4, TRUE, 'atlas-camp.jpg'),
+(4, 'Riad Soleil', 'Riad', 95.00, 2, TRUE, 'riad-soleil.jpg'),
+(4, 'Atlas Desert Camp', 'Riad', 125.00, 4, TRUE, 'atlas-camp.jpg'),
 
-(5, 'Northern Lights Lodge', 'lodge', 240.00, 4, TRUE, 'northern-lights-lodge.jpg'),
-(5, 'Reykjavik City Guesthouse', 'guesthouse', 155.00, 2, TRUE, 'reykjavik-guesthouse.jpg');
+(5, 'Northern Lights Lodge', 'Chalet', 240.00, 4, TRUE, 'northern-lights-lodge.jpg'),
+(5, 'Reykjavik City Guesthouse', 'Hotel', 155.00, 2, TRUE, 'reykjavik-guesthouse.jpg');
 
 INSERT INTO activites (destination_id, nom, description, prix, date_activite, places_disponibles, image)
 VALUES

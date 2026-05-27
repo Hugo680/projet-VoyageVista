@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
     echo json_encode([
         "success" => false,
-        "message" => "Méthode non autorisée"
+        "message" => "Methode non autorisee"
     ]);
     exit;
 }
@@ -20,7 +20,7 @@ if (!isset($_SESSION["user"])) {
     http_response_code(401);
     echo json_encode([
         "success" => false,
-        "message" => "Utilisateur non connecté"
+        "message" => "Utilisateur non connecte"
     ]);
     exit;
 }
@@ -31,7 +31,7 @@ if (!$data) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "Aucune donnée reçue"
+        "message" => "Aucune donnee recue"
     ]);
     exit;
 }
@@ -43,7 +43,7 @@ if (!$itineraire_id) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "ID d'itinéraire obligatoire"
+        "message" => "ID d'itineraire obligatoire"
     ]);
     exit;
 }
@@ -59,9 +59,11 @@ try {
             itineraires.date_debut,
             itineraires.date_fin,
             itineraires.statut,
+            destinations.nom AS destination_nom,
             transports.prix AS transport_prix,
             hebergements.prix_nuit AS hebergement_prix_nuit
         FROM itineraires
+        LEFT JOIN destinations ON itineraires.destination_id = destinations.id
         LEFT JOIN transports ON itineraires.transport_id = transports.id
         LEFT JOIN hebergements ON itineraires.hebergement_id = hebergements.id
         WHERE itineraires.id = ? AND itineraires.user_id = ?
@@ -73,7 +75,7 @@ try {
         http_response_code(404);
         echo json_encode([
             "success" => false,
-            "message" => "Itinéraire introuvable"
+            "message" => "Itineraire introuvable"
         ]);
         exit;
     }
@@ -82,7 +84,7 @@ try {
         http_response_code(403);
         echo json_encode([
             "success" => false,
-            "message" => "Seul un itinéraire en création peut être réservé"
+            "message" => "Seul un itineraire en creation peut etre reserve"
         ]);
         exit;
     }
@@ -91,7 +93,7 @@ try {
         http_response_code(400);
         echo json_encode([
             "success" => false,
-            "message" => "L'itinéraire doit contenir une destination, un transport, un hébergement et des dates"
+            "message" => "L'itineraire doit contenir une destination, un transport, un hebergement et des dates"
         ]);
         exit;
     }
@@ -100,7 +102,7 @@ try {
         http_response_code(400);
         echo json_encode([
             "success" => false,
-            "message" => "La date de fin doit être supérieure ou égale à la date de début"
+            "message" => "La date de fin doit etre superieure ou egale a la date de debut"
         ]);
         exit;
     }
@@ -118,7 +120,7 @@ try {
         http_response_code(404);
         echo json_encode([
             "success" => false,
-            "message" => "Hébergement introuvable"
+            "message" => "Hebergement introuvable"
         ]);
         exit;
     }
@@ -144,7 +146,7 @@ try {
         http_response_code(404);
         echo json_encode([
             "success" => false,
-            "message" => "Une ou plusieurs activités associées sont introuvables"
+            "message" => "Une ou plusieurs activites associees sont introuvables"
         ]);
         exit;
     }
@@ -175,10 +177,11 @@ try {
     $updateItineraire = $pdo->prepare("UPDATE itineraires SET statut = ? WHERE id = ? AND user_id = ?");
     $updateItineraire->execute(["valide", $itineraire_id, $user_id]);
 
+    $destination = $itineraire["destination_nom"] ?: "votre voyage";
     $createNotification = $pdo->prepare("INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)");
     $createNotification->execute([
         $user_id,
-        "Votre réservation a été confirmée.",
+        "Votre reservation pour " . $destination . " a ete confirmee - dossier VV-" . $reservation_id,
         "reservation"
     ]);
 
@@ -186,7 +189,7 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "Réservation confirmée avec succès",
+        "message" => "Reservation confirmee avec succes",
         "reservation_id" => $reservation_id,
         "prix_total" => $prix_total
     ]);
@@ -199,7 +202,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Erreur lors de la confirmation de la réservation"
+        "message" => "Erreur lors de la confirmation de la reservation"
     ]);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
@@ -209,7 +212,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Erreur lors du calcul de la réservation"
+        "message" => "Erreur lors du calcul de la reservation"
     ]);
 }
 ?>

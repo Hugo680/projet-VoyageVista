@@ -78,6 +78,8 @@ function Activities(props) {
           <option value="aventure">Aventure</option>
           <option value="culture">Culture</option>
           <option value="detente">Detente</option>
+          <option value="gastronomie">Gastronomie</option>
+          <option value="nature">Nature</option>
           <option value="sport">Sport</option>
         </select>
 

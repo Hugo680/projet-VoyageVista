@@ -30,7 +30,9 @@ function Destinations(props) {
       search === "" ||
       destination.name.toLowerCase().includes(value) ||
       destination.country.toLowerCase().includes(value);
-    const matchType = typeFilter === "" || destination.type === typeFilter;
+    const matchType =
+      typeFilter === "" ||
+      String(destination.type || "").toLowerCase() === typeFilter;
     const matchPrice =
       maxPrice === "" || destination.minPrice <= Number(maxPrice);
 
@@ -49,9 +51,9 @@ function Destinations(props) {
     });
   }
 
-  if (sortBy === "popularity") {
+  if (sortBy === "name-asc") {
     filteredDestinations.sort(function (a, b) {
-      return b.popularity - a.popularity;
+      return a.name.localeCompare(b.name);
     });
   }
 
@@ -89,7 +91,7 @@ function Destinations(props) {
           <option value="">Trier par</option>
           <option value="price-asc">Prix croissant</option>
           <option value="price-desc">Prix decroissant</option>
-          <option value="popularity">Popularite</option>
+          <option value="name-asc">Nom A-Z</option>
         </select>
       </FilterPanel>
 

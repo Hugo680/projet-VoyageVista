@@ -236,10 +236,8 @@ function App() {
         paymentMode: "paiement simule",
         paymentLabel: paymentDetails.cardLabel || "Carte bleue se terminant par 1234",
         paymentIban: paymentDetails.ibanLabel || "FR76 300 **** **** ****",
-        paymentHolder: paymentDetails.holderName || "ILIAN MARTIN",
-        paymentAuthorization:
-          paymentDetails.authorizationCode ||
-          "AUTH-" + String(backendReservation.reservation_id),
+        paymentHolder: paymentDetails.holderName || "Non renseigne",
+        paymentAuthorization: "AUTH-" + String(backendReservation.reservation_id),
         paymentDetails: paymentDetails,
         itinerary: itinerary,
         totals: { ...totals, total: Number(backendReservation.prix_total) }

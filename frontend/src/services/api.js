@@ -120,6 +120,43 @@ function toNumber(value) {
   return value === null || value === undefined ? 0 : Number(value);
 }
 
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+export function normalizeAccommodationType(type) {
+  const value = normalizeText(type);
+
+  if (value === "villa") return "Villa";
+  if (value === "appartement") return "Appartement";
+  if (value === "chalet" || value === "lodge") return "Chalet";
+  if (value === "riad" || value === "camp") return "Riad";
+
+  return "Hotel";
+}
+
+function inferActivityType(activity) {
+  const text = normalizeText((activity.nom || "") + " " + (activity.description || ""));
+
+  if (text.includes("surf") || text.includes("escalade")) return "sport";
+  if (text.includes("gastronom") || text.includes("cuisine")) return "gastronomie";
+  if (text.includes("temple") || text.includes("musee") || text.includes("visite")) return "culture";
+  if (text.includes("randonnee") || text.includes("aurore") || text.includes("nature")) return "nature";
+  if (text.includes("lagon") || text.includes("spa") || text.includes("detente")) return "detente";
+  if (text.includes("atlas") || text.includes("excursion") || text.includes("aventure")) return "aventure";
+
+  return "culture";
+}
+
+function getReservationIdFromMessage(message) {
+  const match = String(message || "").match(/VV-(\d+)/i);
+  return match ? toNumber(match[1]) : null;
+}
+
 function getNights(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -142,7 +179,7 @@ export function mapDestination(destination) {
     id: toNumber(destination.id),
     name: destination.nom,
     country: destination.pays,
-    type: destination.categorie,
+    type: normalizeText(destination.categorie),
     minPrice: toNumber(destination.prix_min),
     popularity: 80,
     image: getImageForName(destination.image || destination.nom, "destination"),
@@ -175,7 +212,7 @@ export function mapAccommodation(accommodation) {
     destinationId: toNumber(accommodation.destination_id),
     destinationName: accommodation.destination_nom || "",
     name: accommodation.nom || "",
-    type: accommodation.type || "",
+    type: normalizeAccommodationType(accommodation.type),
     pricePerNight: toNumber(accommodation.prix_nuit),
     capacity: toNumber(accommodation.capacite),
     available: Boolean(Number(accommodation.disponible)),
@@ -190,7 +227,7 @@ export function mapActivity(activity) {
     destinationId: toNumber(activity.destination_id),
     destinationName: activity.destination_nom || "",
     name: activity.nom || "",
-    type: activity.type || "experience",
+    type: normalizeText(activity.type) || inferActivityType(activity),
     price: toNumber(activity.prix),
     date: activity.date_activite || "",
     placesAvailable: toNumber(activity.places_disponibles),
@@ -204,6 +241,7 @@ export function mapNotification(notification) {
     id: toNumber(notification.id),
     message: notification.message || "",
     type: notification.type || "info",
+    reservationId: getReservationIdFromMessage(notification.message),
     read: Boolean(Number(notification.lu)),
     createdAt: notification.created_at || new Date().toISOString()
   };
@@ -222,7 +260,7 @@ export function mapReservation(reservation) {
     paymentMode: "paiement simule",
     paymentLabel: "Carte bleue se terminant par 1234",
     paymentIban: "FR76 300 **** **** ****",
-    paymentHolder: "ILIAN MARTIN",
+    paymentHolder: "",
     paymentAuthorization: "AUTH-" + reservation.id,
     paymentDetails: null,
     itinerary: {

@@ -30,13 +30,29 @@ const tabs = [
   { id: "reservations", label: "Reservations" }
 ];
 
+const destinationCategories = [
+  { value: "plage", label: "Plage" },
+  { value: "ville", label: "Ville" },
+  { value: "montagne", label: "Montagne" },
+  { value: "aventure", label: "Aventure" },
+  { value: "detente", label: "Detente" }
+];
+
+const accommodationTypes = [
+  { value: "Hotel", label: "Hotel" },
+  { value: "Villa", label: "Villa" },
+  { value: "Appartement", label: "Appartement" },
+  { value: "Chalet", label: "Chalet" },
+  { value: "Riad", label: "Riad" }
+];
+
 const emptyDestination = {
   nom: "",
   pays: "",
   description: "",
   image: "",
   prix_min: "",
-  categorie: ""
+  categorie: "plage"
 };
 
 const emptyTransport = {
@@ -51,7 +67,7 @@ const emptyTransport = {
 const emptyAccommodation = {
   destination_id: "",
   nom: "",
-  type: "",
+  type: "Hotel",
   prix_nuit: "",
   capacite: "",
   disponible: true,
@@ -86,6 +102,25 @@ function getDestinationName(destinations, destinationId) {
   });
 
   return destination ? destination.nom : "Destination";
+}
+
+function normalizeAdminValue(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function normalizeAccommodationAdminType(value) {
+  const type = normalizeAdminValue(value);
+
+  if (type === "villa") return "Villa";
+  if (type === "appartement") return "Appartement";
+  if (type === "chalet" || type === "lodge") return "Chalet";
+  if (type === "riad" || type === "camp") return "Riad";
+
+  return "Hotel";
 }
 
 function AdminSection(props) {
@@ -135,6 +170,10 @@ function AdminSection(props) {
     Object.keys(props.emptyForm).forEach(function (field) {
       if (field === "disponible") {
         nextForm[field] = item[field] === true || Number(item[field]) === 1;
+      } else if (props.title === "Hebergements" && field === "type") {
+        nextForm[field] = normalizeAccommodationAdminType(item[field]);
+      } else if (field === "categorie") {
+        nextForm[field] = normalizeAdminValue(item[field]);
       } else {
         nextForm[field] = item[field] ?? "";
       }
@@ -425,7 +464,12 @@ function Admin(props) {
             { name: "description", label: "Description", type: "textarea" },
             { name: "image", label: "Image", required: false },
             { name: "prix_min", label: "Prix minimum", type: "number" },
-            { name: "categorie", label: "Categorie" }
+            {
+              name: "categorie",
+              label: "Categorie",
+              type: "select",
+              options: destinationCategories
+            }
           ]}
           numericFields={["prix_min"]}
           items={destinations}
@@ -485,7 +529,7 @@ function Admin(props) {
           fields={[
             { name: "destination_id", label: "Destination", type: "select", options: destinationOptions },
             { name: "nom", label: "Nom" },
-            { name: "type", label: "Type" },
+            { name: "type", label: "Type", type: "select", options: accommodationTypes },
             { name: "prix_nuit", label: "Prix par nuit", type: "number" },
             { name: "capacite", label: "Capacite", type: "number" },
             { name: "disponible", label: "Disponible", type: "checkbox", required: false },
@@ -499,7 +543,7 @@ function Admin(props) {
           renderItem={(item) => (
             <>
               <strong>{item.nom}</strong>
-              <p>{getDestinationName(destinations, item.destination_id)} - {item.type} - {item.prix_nuit} EUR / nuit</p>
+              <p>{getDestinationName(destinations, item.destination_id)} - {normalizeAccommodationAdminType(item.type)} - {item.prix_nuit} EUR / nuit</p>
             </>
           )}
           onMessage={showMessage}
@@ -555,19 +599,22 @@ function Admin(props) {
                     <p>{reservation.prix_total} EUR - {new Date(reservation.date_reservation).toLocaleDateString("fr-FR")}</p>
                   </div>
                   <div className="admin-row-actions">
-                    <button
-                      className="button danger"
-                      disabled={reservation.statut === "annulee"}
-                      onClick={() =>
-                        runAdminAction(
-                          () => cancelReservation({ reservation_id: reservation.id }),
-                          "Reservation annulee."
-                        )
-                      }
-                      type="button"
-                    >
-                      Annuler
-                    </button>
+                    {reservation.statut === "annulee" ? (
+                      <span className="tag">Reservation annulee</span>
+                    ) : (
+                      <button
+                        className="button danger"
+                        onClick={() =>
+                          runAdminAction(
+                            () => cancelReservation({ reservation_id: reservation.id }),
+                            "Reservation annulee."
+                          )
+                        }
+                        type="button"
+                      >
+                        Annuler
+                      </button>
+                    )}
                   </div>
                 </article>
               );

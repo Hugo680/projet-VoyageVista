@@ -1,3 +1,5 @@
+import { getPaymentDetailsForReservation } from "../services/paymentStorage";
+
 function Reservations(props) {
   function formatStatus(status) {
     if (status === "confirmee") return "Confirmee";
@@ -6,23 +8,13 @@ function Reservations(props) {
   }
 
   function getPaymentInfo(reservation) {
+    const payment = getPaymentDetailsForReservation(reservation);
+
     return {
-      label:
-        reservation.paymentLabel ||
-        reservation.paymentDetails?.cardLabel ||
-        "Carte bleue se terminant par 1234",
-      iban:
-        reservation.paymentIban ||
-        reservation.paymentDetails?.ibanLabel ||
-        "FR76 300 **** **** ****",
-      holder:
-        reservation.paymentHolder ||
-        reservation.paymentDetails?.holderName ||
-        "ILIAN MARTIN",
-      authorization:
-        reservation.paymentAuthorization ||
-        reservation.paymentDetails?.authorizationCode ||
-        "AUTH-" + reservation.id
+      label: payment.paymentLabel,
+      iban: payment.paymentIbanMasked,
+      holder: payment.paymentHolder,
+      authorization: payment.paymentAuthorization
     };
   }
 

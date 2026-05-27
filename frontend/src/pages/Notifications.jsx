@@ -1,3 +1,5 @@
+import { getPaymentDetailsForReservation } from "../services/paymentStorage";
+
 function Notifications(props) {
   function getNotificationReservation(notification) {
     if (!props.reservations || props.reservations.length === 0) {
@@ -15,7 +17,14 @@ function Notifications(props) {
     }
 
     if (notification.type === "reservation") {
-      return props.reservations[0];
+      const isCancellation = notification.message.toLowerCase().includes("annul");
+      const matchingStatus = props.reservations.find(function (reservation) {
+        return isCancellation
+          ? reservation.status === "annulee"
+          : reservation.status === "confirmee";
+      });
+
+      return matchingStatus || props.reservations[0];
     }
 
     return null;
@@ -32,15 +41,23 @@ function Notifications(props) {
       return null;
     }
 
+    const lowerMessage = notification.message.toLowerCase();
+    const isSpecificConfirmation = lowerMessage.includes("confirmee");
+    const isCancellation =
+      lowerMessage.includes("annul") ||
+      (!isSpecificConfirmation && reservation.status === "annulee");
+
+    const payment = getPaymentDetailsForReservation(reservation);
+
     return {
       destination: reservation.itinerary.destination.name,
       dates:
         reservation.itinerary.startDate + " au " + reservation.itinerary.endDate,
       total: reservation.totals.total,
+      status: isCancellation ? "Annulee" : "Confirmee",
+      isCancellation: isCancellation,
       paymentMethod:
-        reservation.paymentLabel ||
-        reservation.paymentDetails?.cardLabel ||
-        "Carte bleue se terminant par 1234"
+        payment.paymentLabel
     };
   }
 
@@ -51,10 +68,22 @@ function Notifications(props) {
       return notification.message;
     }
 
+    if (notification.message && !notification.message.includes("a ete confirmee.")) {
+      return notification.message;
+    }
+
+    const action =
+      reservation.status === "annulee" ||
+      notification.message.toLowerCase().includes("annul")
+        ? "annulee"
+        : "confirmee";
+
     return (
       "Votre reservation pour " +
       reservation.itinerary.destination.name +
-      " a ete confirmee - dossier VV-" +
+      " a ete " +
+      action +
+      " - dossier VV-" +
       reservation.id
     );
   }
@@ -91,7 +120,11 @@ function Notifications(props) {
                     <span>Destination: {details.destination}</span>
                     <span>Dates: {details.dates}</span>
                     <span>Total: {details.total} EUR</span>
-                    <span>Paiement: {details.paymentMethod}</span>
+                    {details.isCancellation ? (
+                      <span>Statut: {details.status}</span>
+                    ) : (
+                      <span>Paiement: {details.paymentMethod}</span>
+                    )}
                   </div>
                 )}
                 <p>{new Date(notification.createdAt).toLocaleString("fr-FR")}</p>

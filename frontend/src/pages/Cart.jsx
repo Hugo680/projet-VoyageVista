@@ -1,19 +1,27 @@
 import { useState } from "react";
 import ItinerarySummary from "../components/ItinerarySummary";
+import { saveStoredPaymentDetails } from "../services/paymentStorage";
 
 const initialPayment = {
-  holderName: "ILIAN MARTIN",
-  cardNumber: "4970 0000 0000 1234",
+  holderName: "",
+  cardNumber: "",
   expiry: "12/29",
-  cvv: "123",
-  iban: "FR76 3000 6000 0112 3456 7890 189",
-  billingEmail: "client@voyagevista.fr"
+  cvv: "",
+  iban: "",
+  billingEmail: ""
 };
 
 function maskCard(cardNumber) {
   const digits = cardNumber.replace(/\D/g, "");
   const lastFour = digits.slice(-4) || "0000";
   return "Carte bleue se terminant par " + lastFour;
+}
+
+function maskIban(iban) {
+  const compactIban = iban.replace(/\s/g, "");
+  const start = compactIban.slice(0, 7);
+  const formattedStart = start.length > 4 ? start.slice(0, 4) + " " + start.slice(4) : start;
+  return formattedStart ? formattedStart + " **** **** ****" : "FR76 300 **** **** ****";
 }
 
 function Cart(props) {
@@ -39,20 +47,26 @@ function Cart(props) {
   }
 
   async function handleValidate() {
-    const paymentDetails = {
+    const enteredPaymentDetails = {
       holderName: payment.holderName,
       cardLabel: maskCard(payment.cardNumber),
-      ibanLabel: payment.iban ? payment.iban.slice(0, 8) + " **** **** ****" : "",
+      ibanLabel: maskIban(payment.iban),
       billingEmail: payment.billingEmail,
-      cvvChecked: payment.cvv.length >= 3,
-      authorizationCode: "AUTH-" + Date.now().toString().slice(-6)
+      cvvChecked: payment.cvv.length >= 3
     };
 
     setValidating(true);
     setMessage("");
 
     try {
-      const reservation = await props.validateReservation(paymentDetails);
+      const reservation = await props.validateReservation(enteredPaymentDetails);
+      const paymentDetails = saveStoredPaymentDetails(reservation.id, {
+        paymentLabel: enteredPaymentDetails.cardLabel,
+        paymentIbanMasked: enteredPaymentDetails.ibanLabel,
+        paymentHolder: enteredPaymentDetails.holderName || "Non renseigne",
+        paymentAuthorization: "AUTH-" + reservation.id
+      });
+
       setConfirmed({ ...reservation, paymentDetails: paymentDetails });
     } catch (error) {
       setMessage(error.message);
@@ -68,7 +82,7 @@ function Cart(props) {
         <h1>Reservation confirmee</h1>
         <p>
           Votre voyage pour {confirmed.itinerary.destination.name} est maintenant
-          enregistre avec le paiement simule {confirmed.paymentDetails.cardLabel}.
+          enregistre avec le paiement simule {confirmed.paymentDetails.paymentLabel}.
         </p>
         <button className="button" onClick={() => props.goTo("reservations")}>
           Voir mes reservations

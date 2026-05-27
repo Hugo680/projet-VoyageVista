@@ -48,10 +48,11 @@ function Accommodations(props) {
 
         <select value={type} onChange={(event) => setType(event.target.value)}>
           <option value="">Tous les types</option>
-          <option value="hotel">Hotel</option>
-          <option value="chalet">Chalet</option>
-          <option value="riad">Riad</option>
-          <option value="lodge">Lodge</option>
+          <option value="Hotel">Hotel</option>
+          <option value="Villa">Villa</option>
+          <option value="Appartement">Appartement</option>
+          <option value="Chalet">Chalet</option>
+          <option value="Riad">Riad</option>
         </select>
 
         <label className="checkbox-label">

@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
     echo json_encode([
         "success" => false,
-        "message" => "Méthode non autorisée"
+        "message" => "Methode non autorisee"
     ]);
     exit;
 }
@@ -20,7 +20,7 @@ if (!isset($_SESSION["user"])) {
     http_response_code(401);
     echo json_encode([
         "success" => false,
-        "message" => "Utilisateur non connecté"
+        "message" => "Utilisateur non connecte"
     ]);
     exit;
 }
@@ -31,7 +31,7 @@ if (!$data) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "Aucune donnée reçue"
+        "message" => "Aucune donnee recue"
     ]);
     exit;
 }
@@ -44,13 +44,26 @@ if (!$reservation_id) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "ID de réservation obligatoire"
+        "message" => "ID de reservation obligatoire"
     ]);
     exit;
 }
 
 try {
-    $checkReservation = $pdo->prepare("SELECT id, user_id, statut FROM reservations WHERE id = ?");
+    $checkReservation = $pdo->prepare("
+        SELECT
+            reservations.id,
+            reservations.user_id,
+            reservations.statut,
+            reservations.prix_total,
+            itineraires.date_debut,
+            itineraires.date_fin,
+            destinations.nom AS destination_nom
+        FROM reservations
+        INNER JOIN itineraires ON reservations.itineraire_id = itineraires.id
+        LEFT JOIN destinations ON itineraires.destination_id = destinations.id
+        WHERE reservations.id = ?
+    ");
     $checkReservation->execute([$reservation_id]);
     $reservation = $checkReservation->fetch(PDO::FETCH_ASSOC);
 
@@ -58,7 +71,7 @@ try {
         http_response_code(404);
         echo json_encode([
             "success" => false,
-            "message" => "Réservation introuvable"
+            "message" => "Reservation introuvable"
         ]);
         exit;
     }
@@ -67,7 +80,7 @@ try {
         http_response_code(403);
         echo json_encode([
             "success" => false,
-            "message" => "Vous ne pouvez annuler que vos propres réservations"
+            "message" => "Vous ne pouvez annuler que vos propres reservations"
         ]);
         exit;
     }
@@ -76,7 +89,7 @@ try {
         http_response_code(400);
         echo json_encode([
             "success" => false,
-            "message" => "Cette réservation est déjà annulée"
+            "message" => "Cette reservation est deja annulee"
         ]);
         exit;
     }
@@ -86,10 +99,13 @@ try {
     $stmt = $pdo->prepare("UPDATE reservations SET statut = ? WHERE id = ?");
     $stmt->execute(["annulee", $reservation_id]);
 
+    $destination = $reservation["destination_nom"] ?: "votre voyage";
+    $message = "Votre reservation pour " . $destination . " a ete annulee - dossier VV-" . $reservation_id;
+
     $createNotification = $pdo->prepare("INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)");
     $createNotification->execute([
         $reservation["user_id"],
-        "Votre réservation a été annulée.",
+        $message,
         "reservation"
     ]);
 
@@ -97,7 +113,7 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "Réservation annulée avec succès"
+        "message" => "Reservation annulee avec succes"
     ]);
 
 } catch (PDOException $e) {
@@ -108,7 +124,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Erreur lors de l'annulation de la réservation"
+        "message" => "Erreur lors de l'annulation de la reservation"
     ]);
 }
 ?>
