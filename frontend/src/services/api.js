@@ -192,6 +192,10 @@ export function mapReservation(reservation) {
     createdAt: reservation.date_reservation || new Date().toISOString(),
     status: reservation.statut || "",
     paymentMode: "paiement simule",
+    paymentLabel: "Carte bleue se terminant par 1234",
+    paymentIban: "FR76 300 **** **** ****",
+    paymentHolder: "ILIAN MARTIN",
+    paymentAuthorization: "AUTH-" + reservation.id,
     paymentDetails: null,
     itinerary: {
       destination: {

@@ -891,12 +891,80 @@ body {
   align-items: flex-start;
 }
 
+.reservation-card,
+.notification-card {
+  padding: 28px;
+  border-radius: 14px;
+}
+
+.reservation-card .list-card-main,
+.notification-card .list-card-main {
+  display: grid;
+  gap: 10px;
+}
+
+.reservation-card h3,
+.notification-card h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.reservation-card p,
+.notification-card p {
+  margin: 0;
+}
+
+.reservation-card .list-card-right {
+  min-width: 150px;
+  justify-content: flex-start;
+  gap: 14px;
+  padding-top: 0;
+}
+
+.reservation-card .list-card-right strong {
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.reservation-card .payment-recap {
+  width: min(880px, 100%);
+  margin-top: 10px;
+  padding: 18px;
+  font-size: 16px;
+}
+
+.reservation-card .payment-recap strong {
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.notification-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+}
+
+.notification-card .notification-details {
+  width: min(880px, 100%);
+  padding: 18px;
+  font-size: 16px;
+}
+
+.notification-card .list-card-main > p {
+  margin-top: 8px;
+}
+
 .notification-actions {
   display: flex;
   align-items: flex-end;
   justify-content: center;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  min-width: 170px;
+}
+
+.notification-actions .button {
+  width: 100%;
 }
 
 .confirmation-panel {
@@ -916,6 +984,14 @@ body {
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .notification-card {
+    grid-template-columns: 1fr;
+  }
+
+  .notification-actions {
+    align-items: flex-start;
   }
 
   .summary-layout {

@@ -1,4 +1,31 @@
 function Reservations(props) {
+  function formatStatus(status) {
+    if (status === "confirmee") return "Confirmee";
+    if (status === "annulee") return "Annulee";
+    return status || "Confirmee";
+  }
+
+  function getPaymentInfo(reservation) {
+    return {
+      label:
+        reservation.paymentLabel ||
+        reservation.paymentDetails?.cardLabel ||
+        "Carte bleue se terminant par 1234",
+      iban:
+        reservation.paymentIban ||
+        reservation.paymentDetails?.ibanLabel ||
+        "FR76 300 **** **** ****",
+      holder:
+        reservation.paymentHolder ||
+        reservation.paymentDetails?.holderName ||
+        "ILIAN MARTIN",
+      authorization:
+        reservation.paymentAuthorization ||
+        reservation.paymentDetails?.authorizationCode ||
+        "AUTH-" + reservation.id
+    };
+  }
+
   return (
     <section>
       <div className="page-header">
@@ -8,6 +35,8 @@ function Reservations(props) {
 
       <div className="list">
         {props.reservations.map(function (reservation) {
+          const payment = getPaymentInfo(reservation);
+
           return (
             <article className="list-card reservation-card" key={reservation.id}>
               <div className="list-card-main">
@@ -18,7 +47,8 @@ function Reservations(props) {
                   {reservation.itinerary.endDate}
                 </p>
                 <p>
-                  Transport: {reservation.itinerary.transport.company} -{" "}
+                  Transport: {reservation.itinerary.transport.company} /{" "}
+                  {reservation.itinerary.transport.type} -{" "}
                   {reservation.itinerary.transport.departureCity} vers{" "}
                   {reservation.itinerary.transport.arrivalCity}
                 </p>
@@ -34,20 +64,16 @@ function Reservations(props) {
                     })
                     .join(", ") || "aucune"}
                 </p>
-                {reservation.paymentDetails && (
-                  <div className="payment-recap">
-                    <strong>Paiement</strong>
-                    <span>{reservation.paymentDetails.cardLabel}</span>
-                    <span>IBAN: {reservation.paymentDetails.ibanLabel}</span>
-                    <span>Porteur: {reservation.paymentDetails.holderName}</span>
-                    <span>
-                      Autorisation: {reservation.paymentDetails.authorizationCode}
-                    </span>
-                  </div>
-                )}
+                <div className="payment-recap">
+                  <strong>Paiement</strong>
+                  <span>{payment.label}</span>
+                  <span>IBAN: {payment.iban}</span>
+                  <span>Porteur: {payment.holder}</span>
+                  <span>Autorisation: {payment.authorization}</span>
+                </div>
               </div>
               <div className="list-card-right">
-                <span className="tag">{reservation.status}</span>
+                <span className="tag">{formatStatus(reservation.status)}</span>
                 <strong>{reservation.totals.total} EUR</strong>
                 <span>{new Date(reservation.createdAt).toLocaleDateString("fr-FR")}</span>
               </div>
