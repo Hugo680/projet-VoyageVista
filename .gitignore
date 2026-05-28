@@ -8,5 +8,6 @@ frontend/node_modules/
 frontend/dist/
 
 backend/test_*.html
+backend/hash.php
 backend/hello.php
 backend/test_db.php

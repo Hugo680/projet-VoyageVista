@@ -1,4 +1,5 @@
-CREATE DATABASE IF NOT EXISTS voyagevista;
+DROP DATABASE IF EXISTS voyagevista;
+CREATE DATABASE voyagevista;
 USE voyagevista;
 
 CREATE TABLE users (
