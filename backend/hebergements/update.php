@@ -27,6 +27,8 @@ $prix_nuit = $data["prix_nuit"] ?? null;
 $capacite = $data["capacite"] ?? null;
 $disponible = $data["disponible"] ?? true;
 $image = trim($data["image"] ?? "");
+$latitude = $data["latitude"] ?? null;
+$longitude = $data["longitude"] ?? null;
 
 if (!$id || !$destination_id || $nom === "" || $type === "" || $prix_nuit === null || $capacite === null) {
     http_response_code(400);
@@ -82,7 +84,7 @@ try {
 
     $stmt = $pdo->prepare("
         UPDATE hebergements
-        SET destination_id = ?, nom = ?, type = ?, prix_nuit = ?, capacite = ?, disponible = ?, image = ?
+        SET destination_id = ?, nom = ?, type = ?, prix_nuit = ?, capacite = ?, disponible = ?, image = ?, latitude = ?, longitude = ?
         WHERE id = ?
     ");
 
@@ -94,6 +96,8 @@ try {
         $capacite,
         $disponible ? 1 : 0,
         $image,
+        $latitude === "" ? null : $latitude,
+        $longitude === "" ? null : $longitude,
         $id
     ]);
 

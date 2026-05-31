@@ -26,6 +26,8 @@ $prix_nuit = $data["prix_nuit"] ?? null;
 $capacite = $data["capacite"] ?? null;
 $disponible = $data["disponible"] ?? true;
 $image = trim($data["image"] ?? "");
+$latitude = $data["latitude"] ?? null;
+$longitude = $data["longitude"] ?? null;
 
 if (!$destination_id || $nom === "" || $type === "" || $prix_nuit === null || $capacite === null) {
     http_response_code(400);
@@ -68,8 +70,8 @@ try {
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $stmt->execute([
@@ -79,7 +81,9 @@ try {
         $prix_nuit,
         $capacite,
         $disponible ? 1 : 0,
-        $image
+        $image,
+        $latitude === "" ? null : $latitude,
+        $longitude === "" ? null : $longitude
     ]);
 
     echo json_encode([

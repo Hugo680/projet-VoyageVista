@@ -16,6 +16,8 @@ $description = trim($data["description"] ?? "");
 $image = trim($data["image"] ?? "");
 $prix_min = $data["prix_min"] ?? null;
 $categorie = trim($data["categorie"] ?? "");
+$latitude = $data["latitude"] ?? null;
+$longitude = $data["longitude"] ?? null;
 
 if ($nom === "" || $pays === "" || $description === "" || $prix_min === null || $categorie === "") {
     http_response_code(400);
@@ -37,8 +39,8 @@ if (!is_numeric($prix_min) || $prix_min < 0) {
 
 try {
     $stmt = $pdo->prepare("
-        INSERT INTO destinations (nom, pays, description, image, prix_min, categorie)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO destinations (nom, pays, description, image, prix_min, categorie, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $stmt->execute([
@@ -47,7 +49,9 @@ try {
         $description,
         $image,
         $prix_min,
-        $categorie
+        $categorie,
+        $latitude === "" ? null : $latitude,
+        $longitude === "" ? null : $longitude
     ]);
 
     echo json_encode([

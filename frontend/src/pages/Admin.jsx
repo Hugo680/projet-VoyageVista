@@ -52,7 +52,9 @@ const emptyDestination = {
   description: "",
   image: "",
   prix_min: "",
-  categorie: "plage"
+  categorie: "plage",
+  latitude: "",
+  longitude: ""
 };
 
 const emptyTransport = {
@@ -71,7 +73,9 @@ const emptyAccommodation = {
   prix_nuit: "",
   capacite: "",
   disponible: true,
-  image: ""
+  image: "",
+  latitude: "",
+  longitude: ""
 };
 
 const emptyActivity = {
@@ -469,9 +473,11 @@ function Admin(props) {
               label: "Categorie",
               type: "select",
               options: destinationCategories
-            }
+            },
+            { name: "latitude", label: "Latitude", type: "number", required: false },
+            { name: "longitude", label: "Longitude", type: "number", required: false }
           ]}
-          numericFields={["prix_min"]}
+          numericFields={["prix_min", "latitude", "longitude"]}
           items={destinations}
           onCreate={(payload) => runAdminAction(() => createDestination(payload), "Destination ajoutee.")}
           onUpdate={(payload) => runAdminAction(() => updateDestination(payload), "Destination modifiee.")}
@@ -533,9 +539,11 @@ function Admin(props) {
             { name: "prix_nuit", label: "Prix par nuit", type: "number" },
             { name: "capacite", label: "Capacite", type: "number" },
             { name: "disponible", label: "Disponible", type: "checkbox", required: false },
-            { name: "image", label: "Image", required: false }
+            { name: "image", label: "Image", required: false },
+            { name: "latitude", label: "Latitude", type: "number", required: false },
+            { name: "longitude", label: "Longitude", type: "number", required: false }
           ]}
-          numericFields={["destination_id", "prix_nuit", "capacite"]}
+          numericFields={["destination_id", "prix_nuit", "capacite", "latitude", "longitude"]}
           items={accommodations}
           onCreate={(payload) => runAdminAction(() => createAccommodation(payload), "Hebergement ajoute.")}
           onUpdate={(payload) => runAdminAction(() => updateAccommodation(payload), "Hebergement modifie.")}

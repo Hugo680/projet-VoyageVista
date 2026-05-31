@@ -17,6 +17,8 @@ $description = trim($data["description"] ?? "");
 $image = trim($data["image"] ?? "");
 $prix_min = $data["prix_min"] ?? null;
 $categorie = trim($data["categorie"] ?? "");
+$latitude = $data["latitude"] ?? null;
+$longitude = $data["longitude"] ?? null;
 
 if (!$id || $nom === "" || $pays === "" || $description === "" || $prix_min === null || $categorie === "") {
     http_response_code(400);
@@ -51,7 +53,7 @@ try {
 
     $stmt = $pdo->prepare("
         UPDATE destinations
-        SET nom = ?, pays = ?, description = ?, image = ?, prix_min = ?, categorie = ?
+        SET nom = ?, pays = ?, description = ?, image = ?, prix_min = ?, categorie = ?, latitude = ?, longitude = ?
         WHERE id = ?
     ");
 
@@ -62,6 +64,8 @@ try {
         $image,
         $prix_min,
         $categorie,
+        $latitude === "" ? null : $latitude,
+        $longitude === "" ? null : $longitude,
         $id
     ]);
 
