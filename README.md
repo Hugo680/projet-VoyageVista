@@ -16,6 +16,7 @@ Une interface administrateur permet aussi de gérer les contenus du site.
 - PDO
 - MAMP
 - HTML / CSS
+- Leaflet / OpenStreetMap
 
 ## Prérequis
 
@@ -67,6 +68,16 @@ Le script SQL crée automatiquement la base :
 voyagevista
 ```
 
+
+### Mise a jour pour la carte interactive
+
+Si la base existait deja avant l'ajout de la carte OpenStreetMap, importer aussi ce fichier dans phpMyAdmin :
+
+```text
+database/updates/20260531_map_coordinates.sql
+```
+
+Ce script ajoute les colonnes `latitude` et `longitude` puis renseigne les coordonnees des destinations et hebergements de test.
 ### Étape 4 - Vérifier la connexion MySQL
 
 La configuration se trouve dans :
@@ -173,6 +184,7 @@ Les nouveaux comptes créés depuis le site ont automatiquement le rôle client.
 - Sessions PHP
 - Rôles client / admin
 - Catalogue dynamique de destinations
+- Carte interactive OpenStreetMap des destinations et hebergements
 - Recherche, filtres et tris
 - Transports
 - Hébergements
@@ -216,7 +228,8 @@ VoyageVista/
 - `frontend/dist/` est généré par `npm run build` et n'est pas nécessaire pour le développement.
 - Le paiement est simulé : aucune vraie transaction bancaire n'est réalisée.
 - Les numéros complets de carte et les CVV ne sont pas stockés.
-- Quand une réservation est annulée, son statut passe à `annulee` et les places des activités sont libérées.
+- Quand une réservation est annulée, son statut passe à `annulee` et les places des activités et du transport sont libérées.
+- La carte interactive utilise les coordonnees des destinations et hebergements en base de donnees.
 - Le projet est prévu pour un usage local avec MAMP.
 
 ## Problèmes fréquents
