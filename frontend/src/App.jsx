@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import {
   cancelReservation,
+  getActivities,
   getNotifications,
   getSession,
   getUserReservations,
@@ -248,6 +249,16 @@ function App() {
     return reservation;
   }
 
+  async function refreshActivityAvailability() {
+    const activities = await getActivities();
+    const nextAvailability = {};
+
+    activities.forEach(function (activity) {
+      nextAvailability[activity.id] = activity.placesAvailable;
+    });
+
+    setActivityAvailability(nextAvailability);
+  }
   async function cancelClientReservation(reservationId) {
     const ok = window.confirm("Annuler cette reservation ?");
 
@@ -257,6 +268,7 @@ function App() {
 
     try {
       await cancelReservation({ reservation_id: reservationId });
+      await refreshActivityAvailability();
       await refreshPrivateData();
       alert("Reservation annulee avec succes.");
     } catch (error) {
