@@ -160,6 +160,31 @@ try {
         + (float) $activites["prix_activites"];
 
     $pdo->beginTransaction();
+    $reservedTransport = $pdo->prepare("
+        SELECT id, type, places_disponibles
+        FROM transports
+        WHERE id = ?
+        FOR UPDATE
+    ");
+    $reservedTransport->execute([$itineraire["transport_id"]]);
+    $transportToReserve = $reservedTransport->fetch(PDO::FETCH_ASSOC);
+
+    if (!$transportToReserve || (int) $transportToReserve["places_disponibles"] <= 0) {
+        $pdo->rollBack();
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Plus aucune place disponible pour ce transport"
+        ]);
+        exit;
+    }
+
+    $decreaseTransportPlaces = $pdo->prepare("
+        UPDATE transports
+        SET places_disponibles = places_disponibles - 1
+        WHERE id = ?
+    ");
+    $decreaseTransportPlaces->execute([$transportToReserve["id"]]);
     $reservedActivities = $pdo->prepare("
         SELECT activites.id, activites.nom, activites.places_disponibles
         FROM itineraire_activites
