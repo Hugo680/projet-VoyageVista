@@ -62,22 +62,14 @@ Ouvrir phpMyAdmin, puis importer le fichier :
 database/voyagevista.sql
 ```
 
-Le script SQL crée automatiquement la base :
+Le script SQL cree automatiquement la base avec les destinations, les hebergements et les coordonnees de la carte :
 
 ```text
 voyagevista
 ```
 
 
-### Mise a jour pour la carte interactive
 
-Si la base existait deja avant l'ajout de la carte OpenStreetMap, importer aussi ce fichier dans phpMyAdmin :
-
-```text
-database/updates/20260531_map_coordinates.sql
-```
-
-Ce script ajoute les colonnes `latitude` et `longitude` puis renseigne les coordonnees des destinations et hebergements de test.
 ### Étape 4 - Vérifier la connexion MySQL
 
 La configuration se trouve dans :
