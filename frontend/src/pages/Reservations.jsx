@@ -68,6 +68,16 @@ function Reservations(props) {
                 <span className="tag">{formatStatus(reservation.status)}</span>
                 <strong>{reservation.totals.total} EUR</strong>
                 <span>{new Date(reservation.createdAt).toLocaleDateString("fr-FR")}</span>
+                {reservation.status !== "annulee" && props.cancelReservation && (
+                  <button
+                    className="button danger"
+                    onClick={function () {
+                      props.cancelReservation(reservation.id);
+                    }}
+                  >
+                    Annuler
+                  </button>
+                )}
               </div>
             </article>
           );

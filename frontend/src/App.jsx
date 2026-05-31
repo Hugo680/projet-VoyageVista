@@ -14,6 +14,7 @@ import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import {
+  cancelReservation,
   getNotifications,
   getSession,
   getUserReservations,
@@ -247,6 +248,21 @@ function App() {
     return reservation;
   }
 
+  async function cancelClientReservation(reservationId) {
+    const ok = window.confirm("Annuler cette reservation ?");
+
+    if (!ok) {
+      return;
+    }
+
+    try {
+      await cancelReservation({ reservation_id: reservationId });
+      await refreshPrivateData();
+      alert("Reservation annulee avec succes.");
+    } catch (error) {
+      alert(error.message || "Impossible d'annuler la reservation.");
+    }
+  }
   async function markNotificationRead(notificationId) {
     await markNotificationAsRead(notificationId);
     const nextNotifications = await getNotifications();
@@ -384,7 +400,7 @@ function App() {
     }
 
     if (page === "reservations") {
-      return <Reservations reservations={reservations} />;
+      return <Reservations reservations={reservations} cancelReservation={cancelClientReservation} />;
     }
 
     if (page === "notifications") {
