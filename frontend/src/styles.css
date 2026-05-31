@@ -1210,3 +1210,58 @@ body {
   font-size: 14px;
   font-weight: 700;
 }
+.travel-map-panel {
+  background: rgba(255, 253, 248, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.travel-map-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+}
+
+.travel-map-header h2 {
+  color: var(--forest);
+  margin: 10px 0 0;
+}
+
+.travel-map {
+  height: 330px;
+  width: 100%;
+  z-index: 1;
+}
+
+.travel-map-destinations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 16px 18px;
+}
+
+.map-chip {
+  background: #f8efe0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--forest);
+  cursor: pointer;
+  font-weight: 700;
+  padding: 8px 11px;
+}
+
+.map-chip.active,
+.map-chip:hover {
+  background: var(--forest);
+  color: white;
+}
+
+.map-error {
+  color: var(--wine);
+  font-weight: 700;
+  margin: 0;
+  padding: 0 16px 16px;
+}
