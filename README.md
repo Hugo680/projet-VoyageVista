@@ -152,7 +152,8 @@ Les nouveaux comptes créés depuis le site ont automatiquement le rôle client.
 7. Vérifier l'itinéraire.
 8. Valider le panier avec le paiement simulé.
 9. Consulter les réservations.
-10. Consulter les notifications.
+10. Annuler une réservation si besoin.
+11. Consulter les notifications.
 
 ### Côté administrateur
 
@@ -180,6 +181,7 @@ Les nouveaux comptes créés depuis le site ont automatiquement le rôle client.
 - Panier
 - Paiement simulé
 - Réservations
+- Annulation de réservation avec remise à jour des places
 - Notifications
 - Dashboard administrateur
 - CRUD administrateur
@@ -214,6 +216,7 @@ VoyageVista/
 - `frontend/dist/` est généré par `npm run build` et n'est pas nécessaire pour le développement.
 - Le paiement est simulé : aucune vraie transaction bancaire n'est réalisée.
 - Les numéros complets de carte et les CVV ne sont pas stockés.
+- Quand une réservation est annulée, son statut passe à `annulee` et les places des activités sont libérées.
 - Le projet est prévu pour un usage local avec MAMP.
 
 ## Problèmes fréquents
