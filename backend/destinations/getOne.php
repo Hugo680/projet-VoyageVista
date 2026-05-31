@@ -17,8 +17,11 @@ if (!$id) {
 }
 
 try {
+    $hasLatitude = $pdo->query("SHOW COLUMNS FROM destinations LIKE 'latitude'")->fetch();
+    $coordinatesSelect = $hasLatitude ? "latitude, longitude" : "NULL AS latitude, NULL AS longitude";
+
     $stmt = $pdo->prepare("
-        SELECT id, nom, pays, description, image, prix_min, categorie, latitude, longitude, created_at
+        SELECT id, nom, pays, description, image, prix_min, categorie, " . $coordinatesSelect . ", created_at
         FROM destinations
         WHERE id = ?
     ");

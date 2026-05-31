@@ -17,6 +17,9 @@ if (!$id) {
 }
 
 try {
+    $hasLatitude = $pdo->query("SHOW COLUMNS FROM hebergements LIKE 'latitude'")->fetch();
+    $coordinatesSelect = $hasLatitude ? "hebergements.latitude, hebergements.longitude" : "NULL AS latitude, NULL AS longitude";
+
     $stmt = $pdo->prepare("
         SELECT
             hebergements.id,
@@ -28,8 +31,7 @@ try {
             hebergements.capacite,
             hebergements.disponible,
             hebergements.image,
-                hebergements.latitude,
-                hebergements.longitude
+            " . $coordinatesSelect . "
         FROM hebergements
         INNER JOIN destinations ON hebergements.destination_id = destinations.id
         WHERE hebergements.id = ?

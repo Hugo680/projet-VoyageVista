@@ -116,6 +116,38 @@ export async function uploadImage(file) {
   return data;
 }
 
+
+const destinationCoordinates = {
+  bali: { latitude: -8.4095, longitude: 115.1889 },
+  tokyo: { latitude: 35.6762, longitude: 139.6503 },
+  chamonix: { latitude: 45.9237, longitude: 6.8694 },
+  marrakech: { latitude: 31.6295, longitude: -7.9811 },
+  reykjavik: { latitude: 64.1466, longitude: -21.9426 }
+};
+
+const accommodationCoordinates = {
+  "bali beach hotel": { latitude: -8.7076, longitude: 115.1671 },
+  "ubud garden villa": { latitude: -8.5069, longitude: 115.2625 },
+  "tokyo central hotel": { latitude: 35.6812, longitude: 139.7671 },
+  "shibuya smart stay": { latitude: 35.6595, longitude: 139.7005 },
+  "chalet mont-blanc": { latitude: 45.9231, longitude: 6.8689 },
+  "alpine lodge": { latitude: 45.9357, longitude: 6.8872 },
+  "riad soleil": { latitude: 31.6258, longitude: -7.9891 },
+  "atlas desert camp": { latitude: 31.6173, longitude: -7.9818 },
+  "northern lights lodge": { latitude: 64.151, longitude: -21.9336 },
+  "reykjavik city guesthouse": { latitude: 64.1432, longitude: -21.9147 }
+};
+
+function getCoordinates(rawLatitude, rawLongitude, fallbackKey, fallbackMap) {
+  const latitude = toNumber(rawLatitude);
+  const longitude = toNumber(rawLongitude);
+
+  if (latitude !== 0 && longitude !== 0) {
+    return { latitude: latitude, longitude: longitude };
+  }
+
+  return fallbackMap[normalizeText(fallbackKey)] || { latitude: 0, longitude: 0 };
+}
 function toNumber(value) {
   return value === null || value === undefined ? 0 : Number(value);
 }
@@ -175,6 +207,8 @@ export function mapUser(user) {
 }
 
 export function mapDestination(destination) {
+  const coordinates = getCoordinates(destination.latitude, destination.longitude, destination.nom, destinationCoordinates);
+
   return {
     id: toNumber(destination.id),
     name: destination.nom,
@@ -185,8 +219,8 @@ export function mapDestination(destination) {
     image: getImageForName(destination.image || destination.nom, "destination"),
     description: destination.description || "",
     longDescription: destination.description || "",
-    latitude: toNumber(destination.latitude),
-    longitude: toNumber(destination.longitude)
+    latitude: coordinates.latitude,
+    longitude: coordinates.longitude
   };
 }
 
@@ -209,6 +243,8 @@ export function mapTransport(transport) {
 }
 
 export function mapAccommodation(accommodation) {
+  const coordinates = getCoordinates(accommodation.latitude, accommodation.longitude, accommodation.nom, accommodationCoordinates);
+
   return {
     id: toNumber(accommodation.id),
     destinationId: toNumber(accommodation.destination_id),
@@ -220,8 +256,8 @@ export function mapAccommodation(accommodation) {
     available: Boolean(Number(accommodation.disponible)),
     image: getImageForName(accommodation.image || accommodation.nom, accommodation.type),
     description: accommodation.description || "Hebergement selectionne pour ce sejour.",
-    latitude: toNumber(accommodation.latitude),
-    longitude: toNumber(accommodation.longitude)
+    latitude: coordinates.latitude,
+    longitude: coordinates.longitude
   };
 }
 

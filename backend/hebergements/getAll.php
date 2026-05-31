@@ -8,6 +8,9 @@ require_once __DIR__ . "/../config/db.php";
 $destination_id = $_GET["destination_id"] ?? null;
 
 try {
+    $hasLatitude = $pdo->query("SHOW COLUMNS FROM hebergements LIKE 'latitude'")->fetch();
+    $coordinatesSelect = $hasLatitude ? "hebergements.latitude, hebergements.longitude" : "NULL AS latitude, NULL AS longitude";
+
     if ($destination_id) {
         $stmt = $pdo->prepare("
             SELECT
@@ -20,8 +23,7 @@ try {
                 hebergements.capacite,
                 hebergements.disponible,
                 hebergements.image,
-                hebergements.latitude,
-                hebergements.longitude
+                " . $coordinatesSelect . "
             FROM hebergements
             INNER JOIN destinations ON hebergements.destination_id = destinations.id
             WHERE hebergements.destination_id = ?
@@ -40,8 +42,7 @@ try {
                 hebergements.capacite,
                 hebergements.disponible,
                 hebergements.image,
-                hebergements.latitude,
-                hebergements.longitude
+                " . $coordinatesSelect . "
             FROM hebergements
             INNER JOIN destinations ON hebergements.destination_id = destinations.id
             ORDER BY hebergements.prix_nuit ASC
