@@ -28,9 +28,13 @@ function Reservations(props) {
       <div className="list">
         {props.reservations.map(function (reservation) {
           const payment = getPaymentInfo(reservation);
+          const isCancelled = reservation.status === "annulee";
 
           return (
-            <article className="list-card reservation-card" key={reservation.id}>
+            <article
+              className={isCancelled ? "list-card reservation-card is-cancelled" : "list-card reservation-card"}
+              key={reservation.id}
+            >
               <div className="list-card-main">
                 <span className="tag">Dossier VV-{reservation.id}</span>
                 <h3>{reservation.itinerary.destination.name}</h3>
@@ -68,7 +72,8 @@ function Reservations(props) {
                 <span className="tag">{formatStatus(reservation.status)}</span>
                 <strong>{reservation.totals.total} EUR</strong>
                 <span>{new Date(reservation.createdAt).toLocaleDateString("fr-FR")}</span>
-                {reservation.status !== "annulee" && props.cancelReservation && (
+                {isCancelled && <span className="cancelled-note">Places liberees</span>}
+                {!isCancelled && props.cancelReservation && (
                   <button
                     className="button danger"
                     onClick={function () {

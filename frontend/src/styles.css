@@ -1200,3 +1200,13 @@ body {
     flex-direction: column;
   }
 }
+
+.reservation-card.is-cancelled {
+  opacity: 0.75;
+}
+
+.cancelled-note {
+  color: var(--wine);
+  font-size: 14px;
+  font-weight: 700;
+}
