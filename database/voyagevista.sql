@@ -109,7 +109,7 @@ CREATE TABLE notifications (
 
 INSERT INTO users (nom, email, password, role)
 VALUES
-('Hugo', 'hugo@test.com', '$2y$10$U7zYROjrMYMrQ/jwNlWdI.JkiXBKjAKS.SbTuMwRTa678cF2pPsLy', 'admin');
+('Hugo', 'hugo@test.com', '$2y$10$FK/1NGqWZ8CDALGoClT7u.EI5f87RkaQQ2bedeRXJJKy5jMZl05gG', 'admin');
 
 INSERT INTO destinations (id, nom, pays, description, image, prix_min, categorie, latitude, longitude)
 VALUES
