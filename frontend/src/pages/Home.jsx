@@ -22,7 +22,7 @@ function Home(props) {
           </div>
         </div>
 
-        <TravelMap />
+        <TravelMap itinerary={props.itinerary} />
       </div>
 
       <div className="home-grid">

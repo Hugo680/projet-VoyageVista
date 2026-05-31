@@ -431,7 +431,7 @@ function App() {
       return <Admin connected={connected} user={user} goTo={goTo} />;
     }
 
-    return <Home goTo={goTo} />;
+    return <Home goTo={goTo} itinerary={itinerary} />;
   }
 
   return (

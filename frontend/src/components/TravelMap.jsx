@@ -9,7 +9,7 @@ function hasCoordinates(item) {
   return Number.isFinite(item.latitude) && Number.isFinite(item.longitude) && item.latitude !== 0 && item.longitude !== 0;
 }
 
-function TravelMap() {
+function TravelMap(props) {
   const mapElement = useRef(null);
   const mapRef = useRef(null);
   const layersRef = useRef([]);
@@ -17,6 +17,9 @@ function TravelMap() {
   const [accommodations, setAccommodations] = useState([]);
   const [selectedDestinationId, setSelectedDestinationId] = useState(null);
   const [error, setError] = useState("");
+  const itinerary = props.itinerary || {};
+  const selectedItineraryDestination = itinerary.destination;
+  const selectedItineraryAccommodation = itinerary.accommodation;
 
   useEffect(function () {
     async function loadMapData() {
@@ -74,11 +77,11 @@ function TravelMap() {
         }).length;
 
         const countryCircle = L.circle(position, {
-          radius: selectedDestinationId === destination.id ? 260000 : 170000,
+          radius: selectedDestinationId === destination.id || selectedItineraryDestination?.id === destination.id ? 260000 : 170000,
           color: color,
           fillColor: color,
-          fillOpacity: selectedDestinationId === destination.id ? 0.22 : 0.12,
-          weight: selectedDestinationId === destination.id ? 3 : 2
+          fillOpacity: selectedDestinationId === destination.id || selectedItineraryDestination?.id === destination.id ? 0.24 : 0.12,
+          weight: selectedDestinationId === destination.id || selectedItineraryDestination?.id === destination.id ? 4 : 2
         }).addTo(mapRef.current);
 
         countryCircle.bindPopup(
@@ -100,9 +103,9 @@ function TravelMap() {
       accommodations.forEach(function (accommodation) {
         const position = [accommodation.latitude, accommodation.longitude];
         const marker = L.circleMarker(position, {
-          radius: selectedDestinationId === accommodation.destinationId ? 8 : 6,
+          radius: selectedItineraryAccommodation?.id === accommodation.id ? 10 : selectedDestinationId === accommodation.destinationId ? 8 : 6,
           color: "#fffdf8",
-          fillColor: "#7a2333",
+          fillColor: selectedItineraryAccommodation?.id === accommodation.id ? "#b68a35" : "#7a2333",
           fillOpacity: 0.95,
           weight: 2
         }).addTo(mapRef.current);
@@ -127,9 +130,34 @@ function TravelMap() {
         mapRef.current.fitBounds(bounds, { padding: [24, 24] });
       }
     },
-    [destinations, accommodations, selectedDestinationId]
+    [destinations, accommodations, selectedDestinationId, selectedItineraryDestination, selectedItineraryAccommodation]
   );
 
+
+  useEffect(
+    function () {
+      if (!mapRef.current) {
+        return;
+      }
+
+      if (selectedItineraryAccommodation && hasCoordinates(selectedItineraryAccommodation)) {
+        setSelectedDestinationId(selectedItineraryAccommodation.destinationId);
+        mapRef.current.flyTo(
+          [selectedItineraryAccommodation.latitude, selectedItineraryAccommodation.longitude],
+          12,
+          { duration: 0.9 }
+        );
+      } else if (selectedItineraryDestination && hasCoordinates(selectedItineraryDestination)) {
+        setSelectedDestinationId(selectedItineraryDestination.id);
+        mapRef.current.flyTo(
+          [selectedItineraryDestination.latitude, selectedItineraryDestination.longitude],
+          8,
+          { duration: 0.9 }
+        );
+      }
+    },
+    [selectedItineraryDestination, selectedItineraryAccommodation]
+  );
   function focusDestination(destination) {
     setSelectedDestinationId(destination.id);
 
@@ -143,11 +171,15 @@ function TravelMap() {
       <div className="travel-map-header">
         <div>
           <span className="hero-badge">Carte interactive</span>
-          <h2>Destinations disponibles</h2>
+          <h2>{selectedItineraryDestination ? "Votre voyage sur la carte" : "Destinations disponibles"}</h2>
         </div>
       </div>
 
       <div className="travel-map" ref={mapElement}></div>
+
+      {selectedItineraryDestination && (
+        <p className="map-selection">Selection actuelle : {selectedItineraryDestination.name}{selectedItineraryAccommodation ? " - " + selectedItineraryAccommodation.name : ""}</p>
+      )}
 
       <div className="travel-map-destinations">
         {destinations.map(function (destination) {

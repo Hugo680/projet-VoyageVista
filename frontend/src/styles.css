@@ -1272,3 +1272,9 @@ body {
 .hero > .travel-map-panel .travel-map {
   height: 350px;
 }
+.map-selection {
+  color: var(--forest);
+  font-weight: 700;
+  margin: 0;
+  padding: 12px 16px 0;
+}
