@@ -27,7 +27,9 @@ try {
             hebergements.prix_nuit,
             hebergements.capacite,
             hebergements.disponible,
-            hebergements.image
+            hebergements.image,
+                hebergements.latitude,
+                hebergements.longitude
         FROM hebergements
         INNER JOIN destinations ON hebergements.destination_id = destinations.id
         WHERE hebergements.id = ?

@@ -19,6 +19,8 @@ CREATE TABLE destinations (
     image VARCHAR(255),
     prix_min DECIMAL(10,2),
     categorie VARCHAR(100),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -42,6 +44,8 @@ CREATE TABLE hebergements (
     capacite INT DEFAULT 1,
     disponible BOOLEAN DEFAULT TRUE,
     image VARCHAR(255),
+    latitude DECIMAL(10,7),
+    longitude DECIMAL(10,7),
     FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
 );
 
@@ -107,13 +111,13 @@ INSERT INTO users (nom, email, password, role)
 VALUES
 ('Hugo', 'hugo@test.com', '$2y$10$U7zYROjrMYMrQ/jwNlWdI.JkiXBKjAKS.SbTuMwRTa678cF2pPsLy', 'admin');
 
-INSERT INTO destinations (id, nom, pays, description, image, prix_min, categorie)
+INSERT INTO destinations (id, nom, pays, description, image, prix_min, categorie, latitude, longitude)
 VALUES
-(1, 'Bali', 'Indonésie', 'Rizières, plages et temples pour un séjour entre détente et culture.', 'bali.jpg', 980.00, 'plage'),
-(2, 'Tokyo', 'Japon', 'Une capitale vibrante entre quartiers futuristes, traditions japonaises et gastronomie.', 'tokyo.jpg', 1250.00, 'ville'),
-(3, 'Chamonix', 'France', 'Destination montagne avec randonnées, air alpin et panorama sur le Mont-Blanc.', 'chamonix.jpg', 620.00, 'montagne'),
-(4, 'Marrakech', 'Maroc', 'Souks, jardins, excursions dans l’Atlas et ambiance orientale pour un séjour aventure.', 'marrakech.jpg', 540.00, 'aventure'),
-(5, 'Reykjavik', 'Islande', 'Sources chaudes, paysages volcaniques, nature sauvage et aurores boréales.', 'reykjavik.jpg', 1100.00, 'detente');
+(1, 'Bali', 'Indonésie', 'Rizières, plages et temples pour un séjour entre détente et culture.', 'bali.jpg', 980.00, 'plage', -8.4095, 115.1889),
+(2, 'Tokyo', 'Japon', 'Une capitale vibrante entre quartiers futuristes, traditions japonaises et gastronomie.', 'tokyo.jpg', 1250.00, 'ville', 35.6762, 139.6503),
+(3, 'Chamonix', 'France', 'Destination montagne avec randonnées, air alpin et panorama sur le Mont-Blanc.', 'chamonix.jpg', 620.00, 'montagne', 45.9237, 6.8694),
+(4, 'Marrakech', 'Maroc', 'Souks, jardins, excursions dans l’Atlas et ambiance orientale pour un séjour aventure.', 'marrakech.jpg', 540.00, 'aventure', 31.6295, -7.9811),
+(5, 'Reykjavik', 'Islande', 'Sources chaudes, paysages volcaniques, nature sauvage et aurores boréales.', 'reykjavik.jpg', 1100.00, 'detente', 64.1466, -21.9426);
 
 INSERT INTO transports (destination_id, type, depart, arrivee, prix, places_disponibles)
 VALUES
@@ -123,22 +127,22 @@ VALUES
 (4, 'avion', 'Marseille', 'Marrakech', 160.00, 24),
 (5, 'avion', 'Paris', 'Reykjavik', 390.00, 16);
 
-INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image)
+INSERT INTO hebergements (destination_id, nom, type, prix_nuit, capacite, disponible, image, latitude, longitude)
 VALUES
-(1, 'Bali Beach Hotel', 'Hotel', 115.00, 2, TRUE, 'bali-hotel.jpg'),
-(1, 'Ubud Garden Villa', 'Villa', 165.00, 4, TRUE, 'ubud-villa.jpg'),
+(1, 'Bali Beach Hotel', 'Hotel', 115.00, 2, TRUE, 'bali-hotel.jpg', -8.7076, 115.1671),
+(1, 'Ubud Garden Villa', 'Villa', 165.00, 4, TRUE, 'ubud-villa.jpg', -8.5069, 115.2625),
 
-(2, 'Tokyo Central Hotel', 'Hotel', 180.00, 3, TRUE, 'tokyo-hotel.jpg'),
-(2, 'Shibuya Smart Stay', 'Appartement', 130.00, 2, TRUE, 'shibuya-stay.jpg'),
+(2, 'Tokyo Central Hotel', 'Hotel', 180.00, 3, TRUE, 'tokyo-hotel.jpg', 35.6812, 139.7671),
+(2, 'Shibuya Smart Stay', 'Appartement', 130.00, 2, TRUE, 'shibuya-stay.jpg', 35.6595, 139.7005),
 
-(3, 'Chalet Mont-Blanc', 'Chalet', 220.00, 6, TRUE, 'chalet-mont-blanc.jpg'),
-(3, 'Alpine Lodge', 'Chalet', 145.00, 3, TRUE, 'alpine-lodge.jpg'),
+(3, 'Chalet Mont-Blanc', 'Chalet', 220.00, 6, TRUE, 'chalet-mont-blanc.jpg', 45.9231, 6.8689),
+(3, 'Alpine Lodge', 'Chalet', 145.00, 3, TRUE, 'alpine-lodge.jpg', 45.9357, 6.8872),
 
-(4, 'Riad Soleil', 'Riad', 95.00, 2, TRUE, 'riad-soleil.jpg'),
-(4, 'Atlas Desert Camp', 'Riad', 125.00, 4, TRUE, 'atlas-camp.jpg'),
+(4, 'Riad Soleil', 'Riad', 95.00, 2, TRUE, 'riad-soleil.jpg', 31.6258, -7.9891),
+(4, 'Atlas Desert Camp', 'Riad', 125.00, 4, TRUE, 'atlas-camp.jpg', 31.6173, -7.9818),
 
-(5, 'Northern Lights Lodge', 'Chalet', 240.00, 4, TRUE, 'northern-lights-lodge.jpg'),
-(5, 'Reykjavik City Guesthouse', 'Hotel', 155.00, 2, TRUE, 'reykjavik-guesthouse.jpg');
+(5, 'Northern Lights Lodge', 'Chalet', 240.00, 4, TRUE, 'northern-lights-lodge.jpg', 64.1510, -21.9336),
+(5, 'Reykjavik City Guesthouse', 'Hotel', 155.00, 2, TRUE, 'reykjavik-guesthouse.jpg', 64.1432, -21.9147);
 
 INSERT INTO activites (destination_id, nom, description, prix, date_activite, places_disponibles, image)
 VALUES

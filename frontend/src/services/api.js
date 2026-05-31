@@ -184,7 +184,9 @@ export function mapDestination(destination) {
     popularity: 80,
     image: getImageForName(destination.image || destination.nom, "destination"),
     description: destination.description || "",
-    longDescription: destination.description || ""
+    longDescription: destination.description || "",
+    latitude: toNumber(destination.latitude),
+    longitude: toNumber(destination.longitude)
   };
 }
 
@@ -217,7 +219,9 @@ export function mapAccommodation(accommodation) {
     capacity: toNumber(accommodation.capacite),
     available: Boolean(Number(accommodation.disponible)),
     image: getImageForName(accommodation.image || accommodation.nom, accommodation.type),
-    description: accommodation.description || "Hebergement selectionne pour ce sejour."
+    description: accommodation.description || "Hebergement selectionne pour ce sejour.",
+    latitude: toNumber(accommodation.latitude),
+    longitude: toNumber(accommodation.longitude)
   };
 }
 

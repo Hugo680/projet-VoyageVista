@@ -18,7 +18,7 @@ if (!$id) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT id, nom, pays, description, image, prix_min, categorie, created_at
+        SELECT id, nom, pays, description, image, prix_min, categorie, latitude, longitude, created_at
         FROM destinations
         WHERE id = ?
     ");

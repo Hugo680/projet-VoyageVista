@@ -7,7 +7,7 @@ require_once __DIR__ . "/../config/db.php";
 
 try {
     $stmt = $pdo->query("
-        SELECT id, nom, pays, description, image, prix_min, categorie, created_at
+        SELECT id, nom, pays, description, image, prix_min, categorie, latitude, longitude, created_at
         FROM destinations
         ORDER BY created_at DESC
     ");
