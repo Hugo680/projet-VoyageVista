@@ -56,6 +56,7 @@ try {
             reservations.user_id,
             reservations.statut,
             reservations.prix_total,
+            itineraires.id AS itineraire_id,
             itineraires.date_debut,
             itineraires.date_fin,
             destinations.nom AS destination_nom
@@ -98,6 +99,13 @@ try {
 
     $stmt = $pdo->prepare("UPDATE reservations SET statut = ? WHERE id = ?");
     $stmt->execute(["annulee", $reservation_id]);
+    $restoreActivityPlaces = $pdo->prepare("
+        UPDATE activites
+        INNER JOIN itineraire_activites ON activites.id = itineraire_activites.activite_id
+        SET activites.places_disponibles = activites.places_disponibles + 1
+        WHERE itineraire_activites.itineraire_id = ?
+    ");
+    $restoreActivityPlaces->execute([$reservation["itineraire_id"]]);
 
     $destination = $reservation["destination_nom"] ?: "votre voyage";
     $message = "Votre reservation pour " . $destination . " a ete annulee - dossier VV-" . $reservation_id;
