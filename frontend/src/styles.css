@@ -1265,3 +1265,10 @@ body {
   margin: 0;
   padding: 0 16px 16px;
 }
+.hero > .travel-map-panel {
+  align-self: stretch;
+}
+
+.hero > .travel-map-panel .travel-map {
+  height: 350px;
+}

@@ -1,4 +1,4 @@
-import heroImage from "../assets/images/hero-voyage.jpg";
+import TravelMap from "../components/TravelMap";
 
 function Home(props) {
   return (
@@ -22,17 +22,7 @@ function Home(props) {
           </div>
         </div>
 
-        <div className="hero-image-card">
-          <img src={heroImage} alt="Paysage de voyage" />
-          <div className="hero-box">
-            <h2>Parcours utilisateur</h2>
-            <ul>
-              <li>Connexion, choix destination, transport et hebergement.</li>
-              <li>Ajout d'activites sans doublons.</li>
-              <li>Panier, paiement simule et reservation confirmee.</li>
-            </ul>
-          </div>
-        </div>
+        <TravelMap />
       </div>
 
       <div className="home-grid">
