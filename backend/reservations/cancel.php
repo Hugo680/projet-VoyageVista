@@ -57,6 +57,7 @@ try {
             reservations.statut,
             reservations.prix_total,
             itineraires.id AS itineraire_id,
+            itineraires.transport_id,
             itineraires.date_debut,
             itineraires.date_fin,
             destinations.nom AS destination_nom
@@ -106,6 +107,12 @@ try {
         WHERE itineraire_activites.itineraire_id = ?
     ");
     $restoreActivityPlaces->execute([$reservation["itineraire_id"]]);
+    $restoreTransportPlaces = $pdo->prepare("
+        UPDATE transports
+        SET places_disponibles = places_disponibles + 1
+        WHERE id = ?
+    ");
+    $restoreTransportPlaces->execute([$reservation["transport_id"]]);
 
     $destination = $reservation["destination_nom"] ?: "votre voyage";
     $message = "Votre reservation pour " . $destination . " a ete annulee - dossier VV-" . $reservation_id;
