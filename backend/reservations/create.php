@@ -160,6 +160,37 @@ try {
         + (float) $activites["prix_activites"];
 
     $pdo->beginTransaction();
+    $reservedActivities = $pdo->prepare("
+        SELECT activites.id, activites.nom, activites.places_disponibles
+        FROM itineraire_activites
+        INNER JOIN activites ON itineraire_activites.activite_id = activites.id
+        WHERE itineraire_activites.itineraire_id = ?
+        FOR UPDATE
+    ");
+    $reservedActivities->execute([$itineraire_id]);
+    $activitiesToReserve = $reservedActivities->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($activitiesToReserve as $activity) {
+        if ((int) $activity["places_disponibles"] <= 0) {
+            $pdo->rollBack();
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "Plus aucune place disponible pour l'activite " . $activity["nom"]
+            ]);
+            exit;
+        }
+    }
+
+    $decreaseActivityPlaces = $pdo->prepare("
+        UPDATE activites
+        SET places_disponibles = places_disponibles - 1
+        WHERE id = ?
+    ");
+
+    foreach ($activitiesToReserve as $activity) {
+        $decreaseActivityPlaces->execute([$activity["id"]]);
+    }
 
     $createReservation = $pdo->prepare("
         INSERT INTO reservations (user_id, itineraire_id, prix_total, statut)
